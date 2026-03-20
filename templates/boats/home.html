@@ -10,6 +10,36 @@
   </div>
 </div>
 
+<style>
+  .scroll-row {
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    scrollbar-width: none;
+    padding-bottom: 8px;
+  }
+  .scroll-row::-webkit-scrollbar { display: none; }
+  .boat-card-wrap {
+    flex-shrink: 0;
+    width: 260px;
+  }
+  @media (min-width: 992px) {
+    .boat-card-wrap { width: 280px; }
+  }
+  .boat-img-square {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+  .boat-img-placeholder {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: #e0e0e0;
+    border-radius: 16px;
+  }
+</style>
+
 <!-- Featured boats -->
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
@@ -17,56 +47,30 @@
     <a href="{% url 'boats:boat_list' %}" class="text-decoration-none" style="color: #bb2d3c;">See all</a>
   </div>
 
-  <!-- Desktop grid -->
-  <div class="d-none d-lg-block">
-    <div class="row g-3">
-      {% for boat in featured_boats %}
-      <div class="col-lg-4">
-        <a href="{% url 'boats:boat_detail' boat.pk %}" class="text-decoration-none">
-          <div class="position-relative rounded-4 overflow-hidden" style="height: 220px; background: #1a1a2e;">
-            {% if boat.get_cover_image %}
-              <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
-            {% endif %}
-            <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
-              <div class="text-white fw-bold">{{ boat.name }}</div>
-              <div class="text-white" style="font-size: 13px;">from €{{ boat.price_per_day }}/day</div>
-            </div>
-            <div class="position-absolute bottom-0 end-0 p-3">
-              <div class="bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                <i class="bi bi-arrow-up-right" style="font-size: 14px;"></i>
-              </div>
-            </div>
-          </div>
-        </a>
-      </div>
-      {% empty %}
-      <p class="text-muted">No boats available yet.</p>
-      {% endfor %}
-    </div>
-  </div>
-
-  <!-- Mobile horizontal scroll -->
-  <div class="d-lg-none">
-    <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: none; padding-bottom: 8px;">
-      {% for boat in featured_boats %}
-      <a href="{% url 'boats:boat_detail' boat.pk %}" class="text-decoration-none flex-shrink-0" style="width: 260px;">
-        <div class="position-relative rounded-4 overflow-hidden" style="height: 180px; background: #1a1a2e;">
+  <div class="scroll-row">
+    {% for boat in featured_boats %}
+    <div class="boat-card-wrap">
+      <a href="{% url 'boats:boat_detail' boat.pk %}" class="text-decoration-none">
+        <div class="position-relative">
           {% if boat.get_cover_image %}
-            <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+            <img src="{{ boat.get_cover_image }}" class="boat-img-square" alt="{{ boat.name }}">
+          {% else %}
+            <div class="boat-img-placeholder"></div>
           {% endif %}
-          <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
-            <div class="text-white fw-bold">{{ boat.name }}</div>
-            <div class="text-white" style="font-size: 13px;">from €{{ boat.price_per_day }}/day</div>
-          </div>
-          <div class="position-absolute bottom-0 end-0 p-3">
-            <div class="bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-              <i class="bi bi-arrow-up-right" style="font-size: 14px;"></i>
-            </div>
-          </div>
+          <button class="btn position-absolute top-0 end-0 p-2 border-0 bg-transparent">
+            <i class="bi bi-heart-fill text-white fs-5"></i>
+          </button>
+        </div>
+        <div class="mt-2">
+          <div class="fw-bold text-dark" style="font-size: 14px;">{{ boat.name }}</div>
+          <div class="text-muted" style="font-size: 13px;">{{ boat.location }}</div>
+          <div class="text-dark mt-1" style="font-size: 13px;">from <strong>€{{ boat.price_per_day }}</strong>/day</div>
         </div>
       </a>
-      {% endfor %}
     </div>
+    {% empty %}
+    <p class="text-muted">No boats available yet.</p>
+    {% endfor %}
   </div>
 
 </div>
