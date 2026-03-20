@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth import logout, login, authenticate
 from .forms import RegisterForm, LoginForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -39,3 +40,12 @@ def profile_view(request):
     return HttpResponse('Profile page coming soon')
 def dashboard_view(request):
     return HttpResponse('Dashboard page coming soon')
+
+def become_host_view(request):
+    return render(request, 'accounts/become_host.html')
+
+@login_required
+def become_host_confirm_view(request):
+    request.user.is_owner = True
+    request.user.save()
+    return redirect('boats:boat_create')

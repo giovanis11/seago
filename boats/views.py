@@ -1,8 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from .models import Boat, BoatCategory
 
 def homepage(request):
-    return render(request, 'boats/home.html')
+    featured_boats = Boat.objects.filter(is_approved=True, is_available=True).order_by('-created_at')[:6]
+    print("BOATS FOUND:", featured_boats.count())
+    categories = BoatCategory.objects.all()
+    return render(request, 'boats/home.html', {
+        'featured_boats': featured_boats,
+        'categories': categories,
+    })
 def boat_list(request):
     return HttpResponse('Boat list coming soon')
 def boat_detail(request, boat_id):

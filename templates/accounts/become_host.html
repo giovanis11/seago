@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host</title>
+</head>
+<body>
+    {% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  
+  <div class="row align-items-center">
+    
+    <div class="col-md-6">
+      <h1>Your boat, your rules.</h1>
+      <p>Earn money by listing your boat on SeaGo...</p>
+      
+      <!-- benefits list -->
+      
+      <!-- button -->
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'accounts:become_host_confirm' %}" class="btn btn-primary rounded-pill px-4 py-2">Get started</a>
+      {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-primary rounded-pill px-4 py-2">Log in to get started</a>
+      {% endif %}
+    </div>
+
+    <div class="col-md-6">
+      <!-- image or illustration -->
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
+</body>
+</html>

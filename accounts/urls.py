@@ -9,4 +9,6 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('profile/', views.profile_view, name='profile'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('become-host', views.become_host_view, name='become_host'),
+    path('become-host/confirm', views.become_host_confirm_view, name='become_host_confirm')
 ]

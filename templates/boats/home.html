@@ -1,17 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SeaGo</title>
-</head>
-<body>
-    {% extends "base.html" %}
+{% extends "base.html" %}
 
-    {% block content %}
+{% block content %}
 
-    <h1>Welcome to SeaGo</h1>
-    
-    {% endblock %}
-</body>
-</html>
+<!-- Mobile search - homepage only -->
+<div class="d-lg-none border-bottom bg-white px-3 py-2">
+  <div class="d-flex align-items-center rounded-pill border px-3 py-2 bg-white" style="height: 48px;">
+    <i class="bi bi-search text-muted me-2"></i>
+    <span class="text-muted" style="font-size: 14px;">Start your search</span>
+  </div>
+</div>
+
+<!-- Featured boats -->
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0">Featured boats</h5>
+    <a href="{% url 'boats:boat_list' %}" class="text-decoration-none" style="color: #bb2d3c;">See all</a>
+  </div>
+
+  <!-- Desktop grid -->
+  <div class="d-none d-lg-block">
+    <div class="row g-3">
+      {% for boat in featured_boats %}
+      <div class="col-lg-4">
+        <a href="{% url 'boats:boat_detail' boat.pk %}" class="text-decoration-none">
+          <div class="position-relative rounded-4 overflow-hidden" style="height: 220px; background: #1a1a2e;">
+            {% if boat.get_cover_image %}
+              <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+            {% endif %}
+            <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+              <div class="text-white fw-bold">{{ boat.name }}</div>
+              <div class="text-white" style="font-size: 13px;">from €{{ boat.price_per_day }}/day</div>
+            </div>
+            <div class="position-absolute bottom-0 end-0 p-3">
+              <div class="bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                <i class="bi bi-arrow-up-right" style="font-size: 14px;"></i>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% empty %}
+      <p class="text-muted">No boats available yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Mobile horizontal scroll -->
+  <div class="d-lg-none">
+    <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: none; padding-bottom: 8px;">
+      {% for boat in featured_boats %}
+      <a href="{% url 'boats:boat_detail' boat.pk %}" class="text-decoration-none flex-shrink-0" style="width: 260px;">
+        <div class="position-relative rounded-4 overflow-hidden" style="height: 180px; background: #1a1a2e;">
+          {% if boat.get_cover_image %}
+            <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+          {% endif %}
+          <div class="position-absolute bottom-0 start-0 end-0 p-3" style="background: linear-gradient(transparent, rgba(0,0,0,0.7));">
+            <div class="text-white fw-bold">{{ boat.name }}</div>
+            <div class="text-white" style="font-size: 13px;">from €{{ boat.price_per_day }}/day</div>
+          </div>
+          <div class="position-absolute bottom-0 end-0 p-3">
+            <div class="bg-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+              <i class="bi bi-arrow-up-right" style="font-size: 14px;"></i>
+            </div>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

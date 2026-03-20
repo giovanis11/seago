@@ -1,5 +1,3 @@
-from pyexpat import model
-
 from django.db import models
 from django.conf import settings
 
@@ -34,6 +32,13 @@ class Boat(models.Model):
     is_approved = models.BooleanField(default=False)
     is_available = models.BooleanField(default=True)
 
+    def get_cover_image(self):
+        cover = self.images.filter(is_cover=True).first()
+        if cover:
+            return cover.image.url
+        first = self.images.first()
+        return first.image.url if first else None
+
     def __str__(self):
         return self.name
     
@@ -41,6 +46,7 @@ class BoatImage(models.Model):
     boat = models.ForeignKey(Boat, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='boat_images/')
     is_cover = models.BooleanField(default=False)
+
 
     def __str__(self):
         return f"Image for {self.boat.name}"
