@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 def homepage(request):
-    return HttpResponse('Homepage coming soon')
+    return render(request, 'boats/home.html')
 def boat_list(request):
     return HttpResponse('Boat list coming soon')
 def boat_detail(request, boat_id):
