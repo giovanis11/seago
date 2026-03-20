@@ -1,3 +1,5 @@
+from pyexpat import model
+
 from django.db import models
 from django.conf import settings
 
@@ -42,3 +44,13 @@ class BoatImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.boat.name}"
+    
+class WishList(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='wishlist')
+    boat = models.ForeignKey(Boat, on_delete=models.CASCADE, related_name='wishlisted_by')
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'boat')
+    def __str__(self):
+        return f"{self.user.username} - {self.boat.name}"
