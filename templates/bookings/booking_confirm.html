@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Booking - SeaGo{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="border rounded-4 p-4 shadow-sm">
+        
+        <h4 class="fw-bold mb-4">Confirm your booking</h4>
+
+        <!-- Boat info -->
+        <div class="d-flex gap-3 mb-4 pb-4 border-bottom">
+          {% if boat.get_cover_image %}
+            <img src="{{ boat.get_cover_image }}" class="rounded-3" style="width: 100px; height: 80px; object-fit: cover;">
+          {% endif %}
+          <div>
+            <div class="fw-bold">{{ boat.name }}</div>
+            <div class="text-muted" style="font-size: 13px;">{{ boat.location }}</div>
+            <div class="text-muted" style="font-size: 13px;">{{ boat.boat_type|capfirst }}</div>
+          </div>
+        </div>
+
+        <!-- Booking details -->
+        <div class="mb-4 pb-4 border-bottom">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Check in</span>
+            <span class="fw-bold">{{ cart.start_date }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Check out</span>
+            <span class="fw-bold">{{ cart.end_date }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Guests</span>
+            <span class="fw-bold">{{ cart.guests }}</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Duration</span>
+            <span class="fw-bold">{{ cart.days }} days</span>
+          </div>
+        </div>
+
+        <!-- Price -->
+        <div class="mb-4 pb-4 border-bottom">
+          <div class="d-flex justify-content-between">
+            <span class="text-muted">€{{ boat.price_per_day }} x {{ cart.days }} days</span>
+            <span class="fw-bold">€{{ cart.total_price }}</span>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="d-flex justify-content-between mb-4">
+          <span class="fw-bold fs-5">Total</span>
+          <span class="fw-bold fs-5">€{{ cart.total_price }}</span>
+        </div>
+
+        <!-- Confirm button -->
+        <form method="POST">
+          {% csrf_token %}
+          <button type="submit" class="btn w-100 rounded-pill py-3 fw-bold text-white" style="background: #bb2d3c;">Confirm booking</button>
+        </form>
+
+        <a href="{% url 'boats:boat_detail' boat.pk %}" class="btn w-100 rounded-pill py-2 mt-2 btn-outline-secondary">Go back</a>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

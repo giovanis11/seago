@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard - SeaGo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="fw-bold mb-4">My dashboard</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-success rounded-pill">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- My bookings -->
+  <h5 class="fw-bold mb-3">My bookings</h5>
+  {% if my_bookings %}
+  <div class="d-flex flex-column gap-3 mb-5">
+    {% for booking in my_bookings %}
+    <div class="border rounded-4 p-4">
+      <div class="row align-items-center">
+        <div class="col-md-2">
+          {% if booking.boat.get_cover_image %}
+            <img src="{{ booking.boat.get_cover_image }}" class="rounded-3 w-100" style="height: 80px; object-fit: cover;">
+          {% endif %}
+        </div>
+        <div class="col-md-6">
+          <div class="fw-bold">{{ booking.boat.name }}</div>
+          <div class="text-muted" style="font-size: 13px;">{{ booking.boat.location }}</div>
+          <div class="text-muted" style="font-size: 13px;">{{ booking.start_date }} → {{ booking.end_date }} · {{ booking.guests }} guests</div>
+          <div class="mt-1" style="font-size: 13px;">Total: <strong>€{{ booking.total_price }}</strong></div>
+        </div>
+        <div class="col-md-4 text-end">
+          {% if booking.status == 'pending' %}
+            <span class="badge bg-warning text-dark px-3 py-2">Pending</span>
+          {% elif booking.status == 'confirmed' %}
+            <span class="badge bg-success px-3 py-2">Confirmed</span>
+          {% elif booking.status == 'cancelled' %}
+            <span class="badge bg-danger px-3 py-2">Cancelled</span>
+          {% elif booking.status == 'completed' %}
+            <span class="badge bg-secondary px-3 py-2">Completed</span>
+          {% endif %}
+          {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+          <form method="POST" action="{% url 'bookings:booking_cancel' booking.pk %}" class="mt-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">Cancel</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-4 mb-5 border rounded-4">
+    <i class="bi bi-calendar-x fs-1 text-muted"></i>
+    <h5 class="mt-3 text-muted">No bookings yet</h5>
+    <a href="{% url 'boats:boat_list' %}" class="btn rounded-pill text-white px-4 mt-2" style="background: #bb2d3c;">Browse boats</a>
+  </div>
+  {% endif %}
+
+  <!-- Wishlist -->
+  <h5 class="fw-bold mb-3">My wishlist</h5>
+  {% if wishlist %}
+  <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: none;">
+    {% for item in wishlist %}
+    <a href="{% url 'boats:boat_detail' item.boat.pk %}" class="text-decoration-none flex-shrink-0" style="width: 220px;">
+      <div class="rounded-4 overflow-hidden mb-2" style="aspect-ratio: 1/1;">
+        {% if item.boat.get_cover_image %}
+          <img src="{{ item.boat.get_cover_image }}" class="w-100 h-100 object-fit-cover">
+        {% else %}
+          <div class="w-100 h-100 bg-secondary"></div>
+        {% endif %}
+      </div>
+      <div class="fw-bold text-dark" style="font-size: 14px;">{{ item.boat.name }}</div>
+      <div class="text-muted" style="font-size: 13px;">{{ item.boat.location }}</div>
+      <div class="text-dark" style="font-size: 13px;">€{{ item.boat.price_per_day }}/day</div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-4 border rounded-4">
+    <i class="bi bi-heart fs-1 text-muted"></i>
+    <h5 class="mt-3 text-muted">No saved boats yet</h5>
+    <a href="{% url 'boats:boat_list' %}" class="btn rounded-pill text-white px-4 mt-2" style="background: #bb2d3c;">Browse boats</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

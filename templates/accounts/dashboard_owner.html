@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Owner Dashboard - SeaGo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="fw-bold mb-4">Owner dashboard</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-success rounded-pill">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- My listings -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold">My listings</h5>
+    <a href="{% url 'boats:boat_create' %}" class="btn rounded-pill text-white fw-bold px-4" style="background: #bb2d3c;">+ Add listing</a>
+  </div>
+
+  {% if my_boats %}
+  <div class="row g-3 mb-5">
+    {% for boat in my_boats %}
+    <div class="col-md-4">
+      <div class="border rounded-4 overflow-hidden">
+        <div style="height: 160px;">
+          {% if boat.get_cover_image %}
+            <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover">
+          {% else %}
+            <div class="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center">
+              <i class="bi bi-image text-white fs-1"></i>
+            </div>
+          {% endif %}
+        </div>
+        <div class="p-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="fw-bold">{{ boat.name }}</div>
+              <div class="text-muted" style="font-size: 13px;">{{ boat.location }}</div>
+              <div style="font-size: 13px;">€{{ boat.price_per_day }}/day</div>
+            </div>
+            {% if boat.is_approved %}
+              <span class="badge bg-success">Live</span>
+            {% else %}
+              <span class="badge bg-warning text-dark">Pending</span>
+            {% endif %}
+          </div>
+          <div class="d-flex gap-2 mt-3">
+            <a href="{% url 'boats:boat_edit' boat.pk %}" class="btn btn-outline-secondary btn-sm rounded-pill">Edit</a>
+            <a href="{% url 'boats:boat_delete' boat.pk %}" class="btn btn-outline-danger btn-sm rounded-pill">Delete</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-4 mb-5 border rounded-4">
+    <i class="bi bi-water fs-1 text-muted"></i>
+    <h5 class="mt-3 text-muted">No listings yet</h5>
+    <a href="{% url 'boats:boat_create' %}" class="btn rounded-pill text-white px-4 mt-2" style="background: #bb2d3c;">Add your first boat</a>
+  </div>
+  {% endif %}
+
+  <!-- Incoming bookings -->
+  <h5 class="fw-bold mb-3">Incoming bookings</h5>
+  {% if incoming_bookings %}
+  <div class="d-flex flex-column gap-3">
+    {% for booking in incoming_bookings %}
+    <div class="border rounded-4 p-4">
+      <div class="row align-items-center">
+        <div class="col-md-2">
+          {% if booking.boat.get_cover_image %}
+            <img src="{{ booking.boat.get_cover_image }}" class="rounded-3 w-100" style="height: 80px; object-fit: cover;">
+          {% endif %}
+        </div>
+        <div class="col-md-5">
+          <div class="fw-bold">{{ booking.boat.name }}</div>
+          <div class="text-muted" style="font-size: 13px;">Booked by {{ booking.renter.username }}</div>
+          <div class="text-muted" style="font-size: 13px;">{{ booking.start_date }} → {{ booking.end_date }} · {{ booking.guests }} guests</div>
+          <div style="font-size: 13px;">Total: <strong>€{{ booking.total_price }}</strong></div>
+        </div>
+        <div class="col-md-5 text-end">
+          {% if booking.status == 'pending' %}
+            <span class="badge bg-warning text-dark px-3 py-2 mb-2 d-block">Pending</span>
+            <div class="d-flex gap-2 justify-content-end">
+              <form method="POST" action="{% url 'bookings:booking_update' booking.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="confirmed">
+                <button type="submit" class="btn btn-success btn-sm rounded-pill px-3">Accept</button>
+              </form>
+              <form method="POST" action="{% url 'bookings:booking_update' booking.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="cancelled">
+                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">Decline</button>
+              </form>
+            </div>
+          {% elif booking.status == 'confirmed' %}
+            <span class="badge bg-success px-3 py-2">Confirmed</span>
+          {% elif booking.status == 'cancelled' %}
+            <span class="badge bg-danger px-3 py-2">Cancelled</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-4 border rounded-4">
+    <i class="bi bi-calendar-x fs-1 text-muted"></i>
+    <h5 class="mt-3 text-muted">No incoming bookings yet</h5>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

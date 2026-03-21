@@ -4,6 +4,7 @@ from django.contrib.auth import logout, login, authenticate
 from .forms import RegisterForm, LoginForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from .models import User
 
 
 
@@ -38,8 +39,40 @@ def logout_view(request):
     return redirect('boats:homepage')
 def profile_view(request):
     return HttpResponse('Profile page coming soon')
+
+@login_required
 def dashboard_view(request):
-    return HttpResponse('Dashboard page coming soon')
+    user = request.user
+    if user.is_superuser:
+        from boats.models import Boat
+        from bookings.models import Booking
+        context = {
+            'total_users': User.objects.count(),
+            'total_boats': Boat.objects.count(),
+            'pending_boats': Boat.objects.filter(is_approved=False).count(),
+            'total_bookings': Booking.objects.count(),
+        }
+        return render(request, 'accounts/dashboard_admin.html', context)
+    elif user.is_owner:
+        from boats.models import Boat
+        from bookings.models import Booking
+        my_boats = Boat.objects.filter(owner=user)
+        incoming_bookings = Booking.objects.filter(boat__owner=user).order_by('-created_at')
+        context = {
+            'my_boats': my_boats,
+            'incoming_bookings': incoming_bookings,
+        }
+        return render(request, 'accounts/dashboard_owner.html', context)
+    else:
+        from bookings.models import Booking
+        from boats.models import WishList
+        my_bookings = Booking.objects.filter(renter=user).order_by('-created_at')
+        wishlist = WishList.objects.filter(user=user)
+        context = {
+            'my_bookings': my_bookings,
+            'wishlist': wishlist,
+        }
+        return render(request, 'accounts/dashboard_renter.html', context)
 
 def become_host_view(request):
     return render(request, 'accounts/become_host.html')
