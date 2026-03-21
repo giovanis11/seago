@@ -38,8 +38,12 @@
     </form>
 
     <div class="d-flex align-items-center gap-3">
-      <a href="{% url 'accounts:become_host' %}" class="d-none d-lg-block text-dark fw-bold text-decoration-none" style="font-size: 14px;">Become a host</a>
-      <div class="dropdown">
+      {% if request.user.is_authenticated and request.user.is_owner %}
+        <a href="{% url 'boats:my_listings' %}" class="d-none d-lg-block text-dark fw-bold text-decoration-none" style="font-size: 14px;">My listings</a>
+      {% else %}
+        <a href="{% url 'accounts:become_host' %}" class="d-none d-lg-block text-dark fw-bold text-decoration-none" style="font-size: 14px;">Become a host</a>
+      {% endif %}      
+  <div class="dropdown">
         <button class="btn rounded-circle border d-flex align-items-center justify-content-center bg-white" data-bs-toggle="dropdown" style="width: 42px; height: 42px;">
           <i class="bi bi-list fs-5"></i>
         </button>

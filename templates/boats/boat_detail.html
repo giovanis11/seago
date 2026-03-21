@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}{{ boat.name }} - SeaGo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <!-- Boat name and location -->
+  <h2 class="fw-bold mb-1">{{ boat.name }}</h2>
+  <p class="text-muted mb-3">{{ boat.location }} · {{ boat.get_boat_type_display }} · {{ boat.capacity }} guests</p>
+
+<!-- Photo grid - adapts to number of images -->
+{% with images_count=images.count %}
+<div class="mb-4" style="border-radius: 24px; overflow: hidden; height: 420px;">
+
+  {% if images_count == 1 or images_count == 0 %}
+  <!-- Only cover image - full width -->
+  <div class="h-100">
+    {% if boat.get_cover_image %}
+      <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+    {% else %}
+      <div class="w-100 h-100 bg-secondary"></div>
+    {% endif %}
+  </div>
+
+  {% elif images_count == 2 %}
+  <!-- Cover + 1 extra - two columns -->
+  <div class="row g-2 h-100">
+    <div class="col-6 h-100">
+      <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+    </div>
+    {% for image in images %}
+      {% if not image.is_cover %}
+      <div class="col-6 h-100">
+        <img src="{{ image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% elif images_count == 3 %}
+  <!-- Cover + 2 extras - left big, right two stacked -->
+  <div class="row g-2 h-100">
+    <div class="col-6 h-100">
+      <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+    </div>
+    <div class="col-6 h-100 d-flex flex-column gap-2">
+      {% for image in images %}
+        {% if not image.is_cover %}
+        <div style="flex: 1;">
+          <img src="{{ image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  {% else %}
+  <!-- Cover + 3 or more - Airbnb style: left big, right 2x2 grid -->
+  <div class="row g-2 h-100">
+    <div class="col-6 h-100">
+      <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+    </div>
+    <div class="col-6 h-100">
+      <div class="row g-2 h-100">
+        {% for image in images %}
+          {% if not image.is_cover %}
+          <div class="col-6" style="height: 50%;">
+            <img src="{{ image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endwith %}
+
+
+  <!-- Two column layout -->
+  <div class="row">
+
+    <!-- Left column -->
+    <div class="col-lg-7">
+
+      <!-- Owner info -->
+      <div class="d-flex align-items-center gap-3 mb-4 pb-4 border-bottom">
+        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 48px; height: 48px; font-size: 18px;">
+          {{ boat.owner.username|first|upper }}
+        </div>
+        <div>
+          <div class="fw-bold">Hosted by {{ boat.owner.username }}</div>
+          <div class="text-muted" style="font-size: 13px;">{{ boat.boat_type|capfirst }}</div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="mb-4 pb-4 border-bottom">
+        <h5 class="fw-bold mb-3">About this boat</h5>
+        <p class="text-muted">{{ boat.description }}</p>
+      </div>
+
+      <!-- Features -->
+      {% if boat.features %}
+      <div class="mb-4 pb-4 border-bottom">
+        <h5 class="fw-bold mb-3">Features</h5>
+        <div class="row g-2">
+          {% for feature in boat.features.split %}
+          <div class="col-6 d-flex align-items-center gap-2">
+            <i class="bi bi-check-circle text-success"></i>
+            <span style="font-size: 14px;">{{ feature }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Reviews -->
+      <div class="mb-4">
+        <h5 class="fw-bold mb-3">Reviews ({{ reviews.count }})</h5>
+        {% for review in reviews %}
+        <div class="mb-3 pb-3 border-bottom">
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 32px; height: 32px; font-size: 13px;">
+              {{ review.user.username|first|upper }}
+            </div>
+            <div class="fw-bold" style="font-size: 14px;">{{ review.user.username }}</div>
+            <div class="text-muted" style="font-size: 13px;">{{ review.created_at|date:"M Y" }}</div>
+          </div>
+          <div class="text-warning mb-1">
+            {% for i in "12345" %}
+              {% if forloop.counter <= review.rating %}
+                <i class="bi bi-star-fill" style="font-size: 12px;"></i>
+              {% else %}
+                <i class="bi bi-star" style="font-size: 12px;"></i>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <p class="text-muted mb-0" style="font-size: 14px;">{{ review.comment }}</p>
+        </div>
+        {% empty %}
+        <p class="text-muted">No reviews yet.</p>
+        {% endfor %}
+      </div>
+
+    </div>
+
+    <!-- Right column: booking card -->
+    <div class="col-lg-5">
+      <div class="sticky-top pt-3" style="top: 80px;">
+        <div class="border rounded-4 p-4 shadow-sm">
+          <div class="d-flex align-items-baseline gap-2 mb-4">
+            <span class="fw-bold fs-4">€{{ boat.price_per_day }}</span>
+            <span class="text-muted">/ day</span>
+          </div>
+
+          <form method="POST" action="{% url 'bookings:booking_create' boat.pk %}">
+            {% csrf_token %}
+            <div class="border rounded-3 overflow-hidden mb-3">
+              <div class="row g-0">
+                <div class="col-6 p-3 border-end">
+                  <div class="fw-bold" style="font-size: 11px; text-transform: uppercase;">Check in</div>
+                  <input type="date" name="start_date" class="border-0 w-100 p-0 mt-1" style="font-size: 14px; outline: none;">
+                </div>
+                <div class="col-6 p-3">
+                  <div class="fw-bold" style="font-size: 11px; text-transform: uppercase;">Check out</div>
+                  <input type="date" name="end_date" class="border-0 w-100 p-0 mt-1" style="font-size: 14px; outline: none;">
+                </div>
+              </div>
+              <div class="border-top p-3">
+                <div class="fw-bold" style="font-size: 11px; text-transform: uppercase;">Guests</div>
+                <input type="number" name="guests" min="1" max="{{ boat.capacity }}" value="1" class="border-0 w-100 p-0 mt-1" style="font-size: 14px; outline: none;">
+              </div>
+            </div>
+            {% if request.user.is_authenticated %}
+              <button type="submit" class="btn w-100 rounded-pill py-3 fw-bold text-white" style="background: #bb2d3c;">Reserve</button>
+            {% else %}
+              <a href="{% url 'accounts:login' %}" class="btn w-100 rounded-pill py-3 fw-bold text-white" style="background: #bb2d3c;">Log in to reserve</a>
+            {% endif %}
+          </form>
+
+          <div class="text-center text-muted mt-2" style="font-size: 13px;">You won't be charged yet</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Recommended boats -->
+  {% if recommended %}
+  <div class="mt-5 pt-4 border-top">
+    <h5 class="fw-bold mb-3">Similar boats you might like</h5>
+    <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: none;">
+      {% for rec_boat in recommended %}
+      <a href="{% url 'boats:boat_detail' rec_boat.pk %}" class="text-decoration-none flex-shrink-0" style="width: 240px;">
+        <div class="rounded-4 overflow-hidden mb-2" style="aspect-ratio: 1/1;">
+          {% if rec_boat.get_cover_image %}
+            <img src="{{ rec_boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ rec_boat.name }}">
+          {% else %}
+            <div class="w-100 h-100 bg-secondary"></div>
+          {% endif %}
+        </div>
+        <div class="fw-bold text-dark" style="font-size: 14px;">{{ rec_boat.name }}</div>
+        <div class="text-muted" style="font-size: 13px;">{{ rec_boat.location }}</div>
+        <div class="text-dark" style="font-size: 13px;">€{{ rec_boat.price_per_day }}/day</div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
