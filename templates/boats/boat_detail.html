@@ -213,6 +213,17 @@
                 <input type="number" name="guests" min="1" max="{{ boat.capacity }}" value="1" class="border-0 w-100 p-0 mt-1" style="font-size: 14px; outline: none;">
               </div>
             </div>
+                {% if messages %}
+                {% for message in messages %}
+                  <div class="alert alert-danger rounded-3 mb-3" style="font-size: 13px;">
+                    <i class="bi bi-exclamation-circle me-2"></i>{{ message }}
+                  </div>
+                {% endfor %}
+              {% endif %}
+              {% if request.user.is_authenticated %}
+              {% else %}
+                <a href="...">Log in to reserve</a>
+              {% endif %}
             {% if request.user.is_authenticated %}
               <button type="submit" class="btn w-100 rounded-pill py-3 fw-bold text-white" style="background: #bb2d3c;">Reserve</button>
             {% else %}
