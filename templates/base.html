@@ -15,21 +15,26 @@
 
     <a class="navbar-brand fw-bold fs-4" href="/" style="color: #bb2d3c;">SeaGo</a>
 
-    <form class="d-none d-lg-flex" style="width: 45%;">
+    <form class="d-none d-lg-flex" action="{% url 'boats:boat_list' %}" method="GET" style="width: 45%;">
       <div class="d-flex align-items-center rounded-pill border bg-white w-100 px-2" style="height: 64px;">
         <div class="px-3 flex-grow-1">
           <div class="fw-bold" style="font-size: 13px;">Where</div>
-          <input type="text" class="border-0 shadow-none p-0 bg-transparent w-100" placeholder="Search destinations" style="font-size: 13px; outline: none;">
+          <input type="text" name="q" list="locations-list" class="border-0 shadow-none p-0 bg-transparent w-100" placeholder="Search destinations" style="font-size: 13px; outline: none;">
+          <datalist id="locations-list">
+            {% for location in all_locations %}
+              <option value="{{ location }}">
+            {% endfor %}
+          </datalist>
         </div>
         <div class="border-start" style="height: 32px;"></div>
         <div class="px-3 flex-grow-1">
           <div class="fw-bold" style="font-size: 13px;">When</div>
-          <input type="date" class="border-0 shadow-none p-0 bg-transparent w-100" style="font-size: 13px; outline: none;">
+          <input type="date" name="date" class="border-0 shadow-none p-0 bg-transparent w-100" style="font-size: 13px; outline: none;">
         </div>
         <div class="border-start" style="height: 32px;"></div>
         <div class="px-3 flex-grow-1">
           <div class="fw-bold" style="font-size: 13px;">Who</div>
-          <input type="number" min="1" class="border-0 shadow-none p-0 bg-transparent w-100" placeholder="Add guests" style="font-size: 13px; outline: none;">
+          <input type="number" name="capacity" min="1" class="border-0 shadow-none p-0 bg-transparent w-100" placeholder="Add guests" style="font-size: 13px; outline: none;">
         </div>
         <button class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center me-1" style="width: 40px; height: 40px;">
           <i class="bi bi-search text-white"></i>
@@ -42,10 +47,17 @@
         <a href="{% url 'boats:my_listings' %}" class="d-none d-lg-block text-dark fw-bold text-decoration-none" style="font-size: 14px;">My listings</a>
       {% else %}
         <a href="{% url 'accounts:become_host' %}" class="d-none d-lg-block text-dark fw-bold text-decoration-none" style="font-size: 14px;">Become a host</a>
-      {% endif %}      
-  <div class="dropdown">
-        <button class="btn rounded-circle border d-flex align-items-center justify-content-center bg-white" data-bs-toggle="dropdown" style="width: 42px; height: 42px;">
-          <i class="bi bi-list fs-5"></i>
+      {% endif %}
+
+      <div class="dropdown">
+        <button class="btn rounded-circle border d-flex align-items-center justify-content-center bg-white overflow-hidden p-0" data-bs-toggle="dropdown" style="width: 42px; height: 42px;">
+          {% if request.user.is_authenticated and request.user.avatar %}
+            <img src="{{ request.user.avatar.url }}" style="width: 42px; height: 42px; object-fit: cover;">
+          {% elif request.user.is_authenticated %}
+            <span class="fw-bold" style="font-size: 16px;">{{ request.user.username|first|upper }}</span>
+          {% else %}
+            <i class="bi bi-list fs-5"></i>
+          {% endif %}
         </button>
         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="min-width: 200px; border-radius: 12px;">
           {% if request.user.is_authenticated %}
@@ -63,13 +75,6 @@
 
   </div>
 </nav>
-<!-- Mobile search pill - visible only on small screens -->
-<div class="d-lg-none border-bottom bg-white px-3 py-2">
-  <div class="d-flex align-items-center rounded-pill border px-3 py-2 bg-white" style="height: 48px;">
-    <i class="bi bi-search text-muted me-2"></i>
-    <span class="text-muted" style="font-size: 14px;">Start your search</span>
-  </div>
-</div>
 
 {% block content %}
 {% endblock %}

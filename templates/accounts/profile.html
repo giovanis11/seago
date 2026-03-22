@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}My Profile - SeaGo{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5" style="max-width: 600px;">
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-success rounded-pill text-center">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- Avatar section -->
+    <div class="text-center mb-4">
+      <div class="position-relative d-inline-block mb-3">
+        {% if request.user.avatar %}
+          <img src="{{ request.user.avatar.url }}" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+        {% else %}
+          <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold mx-auto" style="width: 100px; height: 100px; font-size: 36px;">
+            {{ request.user.username|first|upper }}
+          </div>
+        {% endif %}
+        <label for="avatar-input" class="position-absolute bottom-0 end-0 btn rounded-circle p-1 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background: #bb2d3c; cursor: pointer;">
+          <i class="bi bi-camera-fill text-white" style="font-size: 14px;"></i>
+        </label>
+        <input type="file" id="avatar-input" name="avatar" accept="image/*" class="d-none" onchange="this.form.submit()">
+      </div>
+      <div class="fw-bold fs-5">{{ request.user.username }}</div>
+      <div class="text-muted" style="font-size: 13px;">{{ request.user.email }}</div>
+      {% if request.user.avatar %}
+      <button type="submit" name="remove_avatar" value="1" class="btn btn-link text-danger p-0 mt-1" style="font-size: 13px;">
+        Remove photo
+      </button>
+      {% endif %}
+    </div>
+
+    <!-- Personal info -->
+    <div class="border rounded-4 p-4 mb-4">
+      <h5 class="fw-bold mb-3">Personal info</h5>
+      {{ form.username|as_crispy_field }}
+      {{ form.email|as_crispy_field }}
+      {{ form.phone|as_crispy_field }}
+      {{ form.bio|as_crispy_field }}
+    </div>
+
+    <button type="submit" class="btn w-100 rounded-pill text-white fw-bold py-3" style="background: #bb2d3c;">
+      Save changes
+    </button>
+    <a href="{% url 'accounts:dashboard' %}" class="btn w-100 btn-outline-secondary rounded-pill py-2 mt-2">Cancel</a>
+
+  </form>
+</div>
+{% endblock %}

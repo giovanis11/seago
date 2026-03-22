@@ -5,6 +5,7 @@ from .forms import RegisterForm, LoginForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import User
+from .forms import ProfileForm
 
 
 
@@ -37,8 +38,24 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect('boats:homepage')
+
+@login_required
 def profile_view(request):
-    return HttpResponse('Profile page coming soon')
+    if request.method == 'POST':
+        if 'remove_avatar' in request.POST:
+            request.user.avatar.delete()
+            request.user.avatar = None
+            request.user.save()
+            messages.success(request, 'Profile photo removed.')
+            return redirect('accounts:profile')
+        form = ProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('accounts:profile')
+    else:
+        form = ProfileForm(instance=request.user)
+    return render(request, 'accounts/profile.html', {'form': form})
 
 @login_required
 def dashboard_view(request):

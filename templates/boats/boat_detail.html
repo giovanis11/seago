@@ -5,79 +5,81 @@
 {% block content %}
 <div class="container mt-4">
 
-  <!-- Boat name and location -->
   <h2 class="fw-bold mb-1">{{ boat.name }}</h2>
   <p class="text-muted mb-3">{{ boat.location }} · {{ boat.get_boat_type_display }} · {{ boat.capacity }} guests</p>
 
-<!-- Photo grid - adapts to number of images -->
-{% with images_count=images.count %}
-<div class="mb-4" style="border-radius: 24px; overflow: hidden; height: 420px;">
+  {% with images_count=images.count %}
+  <div class="position-relative mb-4" style="border-radius: 24px; overflow: hidden; height: 420px;">
 
-  {% if images_count == 1 or images_count == 0 %}
-  <!-- Only cover image - full width -->
-  <div class="h-100">
-    {% if boat.get_cover_image %}
-      <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
-    {% else %}
-      <div class="w-100 h-100 bg-secondary"></div>
-    {% endif %}
-  </div>
+    {% if images_count == 0 %}
+    <div class="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center">
+      <i class="bi bi-image text-white" style="font-size: 48px;"></i>
+    </div>
 
-  {% elif images_count == 2 %}
-  <!-- Cover + 1 extra - two columns -->
-  <div class="row g-2 h-100">
-    <div class="col-6 h-100">
+    {% elif images_count == 1 %}
+    <div class="h-100">
       <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
     </div>
-    {% for image in images %}
-      {% if not image.is_cover %}
+
+    {% elif images_count == 2 %}
+    <div class="row g-2 h-100">
       <div class="col-6 h-100">
-        <img src="{{ image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+        <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
       </div>
-      {% endif %}
-    {% endfor %}
-  </div>
-
-  {% elif images_count == 3 %}
-  <!-- Cover + 2 extras - left big, right two stacked -->
-  <div class="row g-2 h-100">
-    <div class="col-6 h-100">
-      <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
-    </div>
-    <div class="col-6 h-100 d-flex flex-column gap-2">
       {% for image in images %}
         {% if not image.is_cover %}
-        <div style="flex: 1;">
+        <div class="col-6 h-100">
           <img src="{{ image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
         </div>
         {% endif %}
       {% endfor %}
     </div>
-  </div>
 
-  {% else %}
-  <!-- Cover + 3 or more - Airbnb style: left big, right 2x2 grid -->
-  <div class="row g-2 h-100">
-    <div class="col-6 h-100">
-      <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
-    </div>
-    <div class="col-6 h-100">
-      <div class="row g-2 h-100">
+    {% elif images_count == 3 %}
+    <div class="row g-2 h-100">
+      <div class="col-6 h-100">
+        <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+      </div>
+      <div class="col-6 h-100 d-flex flex-column gap-2">
         {% for image in images %}
           {% if not image.is_cover %}
-          <div class="col-6" style="height: 50%;">
+          <div style="flex: 1; overflow: hidden;">
             <img src="{{ image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
           </div>
           {% endif %}
         {% endfor %}
       </div>
     </div>
+
+    {% else %}
+    <div class="row g-2 h-100">
+      <div class="col-6 h-100">
+        <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+      </div>
+      <div class="col-6 h-100">
+        <div class="row g-2 h-100">
+          {% for image in images %}
+            {% if not image.is_cover %}
+            <div class="col-6" style="height: 50%; overflow: hidden;">
+              <img src="{{ image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if images_count > 1 %}
+    <button class="btn bg-white border rounded-pill position-absolute fw-bold"
+            style="bottom: 16px; right: 16px; font-size: 13px;"
+            onclick="document.querySelector('#all-photos').scrollIntoView({behavior: 'smooth'})">
+      <i class="bi bi-grid me-1"></i> Show all photos
+    </button>
+    {% endif %}
+
   </div>
-  {% endif %}
-
-</div>
-{% endwith %}
-
+  {% endwith %}
 
   <!-- Two column layout -->
   <div class="row">
@@ -87,9 +89,13 @@
 
       <!-- Owner info -->
       <div class="d-flex align-items-center gap-3 mb-4 pb-4 border-bottom">
+      {% if boat.owner.avatar %}
+        <img src="{{ boat.owner.avatar.url }}" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
+      {% else %}
         <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 48px; height: 48px; font-size: 18px;">
           {{ boat.owner.username|first|upper }}
         </div>
+      {% endif %}
         <div>
           <div class="fw-bold">Hosted by {{ boat.owner.username }}</div>
           <div class="text-muted" style="font-size: 13px;">{{ boat.boat_type|capfirst }}</div>
@@ -111,6 +117,22 @@
           <div class="col-6 d-flex align-items-center gap-2">
             <i class="bi bi-check-circle text-success"></i>
             <span style="font-size: 14px;">{{ feature }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- All photos section -->
+      {% if images.count > 1 %}
+      <div class="mb-4 pb-4 border-bottom" id="all-photos">
+        <h5 class="fw-bold mb-3">All photos</h5>
+        <div class="row g-2">
+          {% for image in images %}
+          <div class="col-6 col-md-4">
+            <div class="rounded-3 overflow-hidden" style="aspect-ratio: 4/3;">
+              <img src="{{ image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+            </div>
           </div>
           {% endfor %}
         </div>

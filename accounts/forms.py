@@ -11,3 +11,11 @@ class RegisterForm(UserCreationForm):
 class LoginForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'phone', 'bio']
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 3}),
+        }

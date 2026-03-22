@@ -38,6 +38,11 @@ class Boat(models.Model):
             return cover.image.url
         first = self.images.first()
         return first.image.url if first else None
+    def average_rating(self):
+        reviews = self.reviews.all()
+        if not reviews:
+            return 0
+        return round(sum(r.rating for r in reviews) / reviews.count(), 1)
 
     def __str__(self):
         return self.name
