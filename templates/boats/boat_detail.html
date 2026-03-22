@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}{{ boat.name }} - SeaGo{% endblock %}
 
@@ -81,34 +82,29 @@
   </div>
   {% endwith %}
 
-  <!-- Two column layout -->
   <div class="row">
 
-    <!-- Left column -->
     <div class="col-lg-7">
 
-      <!-- Owner info -->
       <div class="d-flex align-items-center gap-3 mb-4 pb-4 border-bottom">
-      {% if boat.owner.avatar %}
-        <img src="{{ boat.owner.avatar.url }}" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
-      {% else %}
-        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 48px; height: 48px; font-size: 18px;">
-          {{ boat.owner.username|first|upper }}
-        </div>
-      {% endif %}
+        {% if boat.owner.avatar %}
+          <img src="{{ boat.owner.avatar.url }}" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
+        {% else %}
+          <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 48px; height: 48px; font-size: 18px;">
+            {{ boat.owner.username|first|upper }}
+          </div>
+        {% endif %}
         <div>
           <div class="fw-bold">Hosted by {{ boat.owner.username }}</div>
           <div class="text-muted" style="font-size: 13px;">{{ boat.boat_type|capfirst }}</div>
         </div>
       </div>
 
-      <!-- Description -->
       <div class="mb-4 pb-4 border-bottom">
         <h5 class="fw-bold mb-3">About this boat</h5>
         <p class="text-muted">{{ boat.description }}</p>
       </div>
 
-      <!-- Features -->
       {% if boat.features %}
       <div class="mb-4 pb-4 border-bottom">
         <h5 class="fw-bold mb-3">Features</h5>
@@ -123,7 +119,6 @@
       </div>
       {% endif %}
 
-      <!-- All photos section -->
       {% if images.count > 1 %}
       <div class="mb-4 pb-4 border-bottom" id="all-photos">
         <h5 class="fw-bold mb-3">All photos</h5>
@@ -139,37 +134,59 @@
       </div>
       {% endif %}
 
-      <!-- Reviews -->
       <div class="mb-4">
         <h5 class="fw-bold mb-3">Reviews ({{ reviews.count }})</h5>
+
+        {% if request.user.is_authenticated %}
+        <div class="border rounded-4 p-4 mb-4">
+          <h6 class="fw-bold mb-3">Leave a review</h6>
+          <div class="d-flex gap-2 mb-3">
+            {% for i in "12345" %}
+            <i class="bi bi-star fs-4 star-btn" data-value="{{ forloop.counter }}" style="cursor: pointer; color: #ccc;"></i>
+            {% endfor %}
+          </div>
+          <input type="hidden" id="rating-value" value="0">
+          <textarea id="review-comment" class="form-control rounded-3 mb-3" rows="3" placeholder="Share your experience..."></textarea>
+          <button id="submit-review"
+                  class="btn rounded-pill text-white px-4"
+                  style="background: #bb2d3c;"
+                  data-boat-id="{{ boat.pk }}"
+                  data-csrf="{{ csrf_token }}">Submit review</button>
+          <div id="review-message" class="mt-2" style="font-size: 13px;"></div>
+        </div>
+        {% endif %}
+
         {% for review in reviews %}
         <div class="mb-3 pb-3 border-bottom">
           <div class="d-flex align-items-center gap-2 mb-1">
-            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 32px; height: 32px; font-size: 13px;">
-              {{ review.user.username|first|upper }}
-            </div>
+            {% if review.user.avatar %}
+              <img src="{{ review.user.avatar.url }}" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+            {% else %}
+              <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 32px; height: 32px; font-size: 13px;">
+                {{ review.user.username|first|upper }}
+              </div>
+            {% endif %}
             <div class="fw-bold" style="font-size: 14px;">{{ review.user.username }}</div>
             <div class="text-muted" style="font-size: 13px;">{{ review.created_at|date:"M Y" }}</div>
           </div>
-          <div class="text-warning mb-1">
+          <div class="mb-1">
             {% for i in "12345" %}
               {% if forloop.counter <= review.rating %}
-                <i class="bi bi-star-fill" style="font-size: 12px;"></i>
+                <i class="bi bi-star-fill text-warning" style="font-size: 12px;"></i>
               {% else %}
-                <i class="bi bi-star" style="font-size: 12px;"></i>
+                <i class="bi bi-star text-warning" style="font-size: 12px;"></i>
               {% endif %}
             {% endfor %}
           </div>
           <p class="text-muted mb-0" style="font-size: 14px;">{{ review.comment }}</p>
         </div>
         {% empty %}
-        <p class="text-muted">No reviews yet.</p>
+        <p class="text-muted">No reviews yet. Be the first to review!</p>
         {% endfor %}
       </div>
 
     </div>
 
-    <!-- Right column: booking card -->
     <div class="col-lg-5">
       <div class="sticky-top pt-3" style="top: 80px;">
         <div class="border rounded-4 p-4 shadow-sm">
@@ -210,7 +227,6 @@
 
   </div>
 
-  <!-- Recommended boats -->
   {% if recommended %}
   <div class="mt-5 pt-4 border-top">
     <h5 class="fw-bold mb-3">Similar boats you might like</h5>
@@ -234,4 +250,9 @@
   {% endif %}
 
 </div>
+
+{% block extra_js %}
+<script src="{% static 'js/reviews.js' %}"></script>
+{% endblock %}
+
 {% endblock %}

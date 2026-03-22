@@ -9,5 +9,9 @@ class Review(models.Model):
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('user', 'boat')
+        ordering = ['-created_at']
+
     def __str__(self):
         return f"Review {self.id} - {self.boat.name} by {self.user.username}"
