@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Confirm Booking - SeaGo{% endblock %}
+{% block title %}Booking Cart - SeaGo{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -8,7 +8,8 @@
     <div class="col-md-6">
       <div class="border rounded-4 p-4 shadow-sm">
         
-        <h4 class="fw-bold mb-4">Confirm your booking</h4>
+        <h4 class="fw-bold mb-2">Your booking cart</h4>
+        <p class="text-muted mb-4" style="font-size: 14px;">Review the trip details before sending your booking request.</p>
 
         <!-- Boat info -->
         <div class="d-flex gap-3 mb-4 pb-4 border-bottom">
@@ -56,13 +57,17 @@
           <span class="fw-bold fs-5">€{{ cart.total_price }}</span>
         </div>
 
-        <!-- Confirm button -->
+        <!-- Cart actions -->
         <form method="POST">
           {% csrf_token %}
-          <button type="submit" class="btn w-100 rounded-pill py-3 fw-bold text-white" style="background: #bb2d3c;">Confirm booking</button>
+          <button type="submit" class="btn w-100 rounded-pill py-3 fw-bold text-white" style="background: #bb2d3c;">Confirm booking request</button>
         </form>
 
-        <a href="{% url 'boats:boat_detail' boat.pk %}" class="btn w-100 rounded-pill py-2 mt-2 btn-outline-secondary">Go back</a>
+        <a href="{% url 'boats:boat_detail' boat.pk %}" class="btn w-100 rounded-pill py-2 mt-2 btn-outline-secondary">Back to boat</a>
+        <form method="POST" action="{% url 'bookings:booking_cart_remove' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn w-100 rounded-pill py-2 mt-2 btn-outline-danger">Remove from cart</button>
+        </form>
 
       </div>
     </div>

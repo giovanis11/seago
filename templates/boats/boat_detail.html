@@ -225,13 +225,13 @@
                 <a href="...">Log in to reserve</a>
               {% endif %}
             {% if request.user.is_authenticated %}
-              <button type="submit" class="btn w-100 rounded-pill py-3 fw-bold text-white" style="background: #bb2d3c;">Reserve</button>
+              <button type="submit" class="btn w-100 rounded-pill py-3 fw-bold text-white" style="background: #bb2d3c;">Add to cart</button>
             {% else %}
               <a href="{% url 'accounts:login' %}" class="btn w-100 rounded-pill py-3 fw-bold text-white" style="background: #bb2d3c;">Log in to reserve</a>
             {% endif %}
           </form>
 
-          <div class="text-center text-muted mt-2" style="font-size: 13px;">You won't be charged yet</div>
+          <div class="text-center text-muted mt-2" style="font-size: 13px;">Review in your cart before sending the booking request</div>
         </div>
       </div>
     </div>

@@ -66,7 +66,7 @@ def booking_create(request, boat_id):
             'days': days,
             'total_price': str(total),
         }
-        return redirect('bookings:booking_confirm')
+        return redirect('bookings:booking_cart')
 
     return redirect('boats:boat_detail', pk=boat_id)
 
@@ -88,7 +88,7 @@ def booking_confirm(request):
     boat = get_object_or_404(Boat, pk=cart['boat_id'])
 
     if request.method == 'POST':
-        booking = Booking.objects.create(
+        Booking.objects.create(
             renter=request.user,
             boat=boat,
             start_date=cart['start_date'],
@@ -98,13 +98,23 @@ def booking_confirm(request):
             status='pending',
         )
         del request.session['cart']
-        messages.success(request, 'Booking confirmed! The owner will review your request.')
+        messages.success(request, 'Booking request submitted from your cart. The owner will review it.')
         return redirect('bookings:booking_list')
 
     return render(request, 'bookings/booking_confirm.html', {
         'cart': cart,
         'boat': boat,
     })
+
+
+@login_required
+def booking_cart_remove(request):
+    if request.method == 'POST':
+        request.session.pop('cart', None)
+        messages.success(request, 'Booking cart cleared.')
+    return redirect('boats:boat_list')
+
+
 @login_required
 def booking_update(request, pk):
     booking = get_object_or_404(Booking, pk=pk, boat__owner=request.user)

@@ -49,6 +49,15 @@
         <a href="{% url 'accounts:become_host' %}" class="d-none d-lg-block text-dark fw-bold text-decoration-none" style="font-size: 14px;">Become a host</a>
       {% endif %}
 
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'bookings:booking_cart' %}" class="text-dark fw-bold text-decoration-none position-relative" style="font-size: 14px;">
+          <i class="bi bi-bag me-1"></i>Cart
+          {% if request.session.cart %}
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background: #bb2d3c;">1</span>
+          {% endif %}
+        </a>
+      {% endif %}
+
       <div class="dropdown">
         <button class="btn rounded-circle border d-flex align-items-center justify-content-center bg-white overflow-hidden p-0" data-bs-toggle="dropdown" style="width: 42px; height: 42px;">
           {% if request.user.is_authenticated and request.user.avatar %}
