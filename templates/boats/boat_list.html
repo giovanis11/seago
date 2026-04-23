@@ -58,6 +58,9 @@
             {% endif %}
           </div>
           <div class="text-muted" style="font-size: 13px;">{{ boat.location }}</div>
+          {% if boat.luxury_subcategory %}
+          <div class="text-muted" style="font-size: 13px;">{{ boat.get_luxury_subcategory_display }}</div>
+          {% endif %}
           <div class="text-muted" style="font-size: 13px;">{{ boat.get_boat_type_display }} · {{ boat.capacity }} guests</div>
           <div class="text-dark mt-1" style="font-size: 13px;">from <strong>€{{ boat.price_per_day }}</strong>/day</div>
         </div>
@@ -119,6 +122,17 @@
             </div>
           </div>
 
+          <div class="mb-3" id="luxury-subcategory-filter" {% if current_category != luxury_category_id|stringformat:"s" %}style="display: none;"{% endif %}>
+            <label class="form-label fw-bold" style="font-size: 13px;">Luxury sub-category</label>
+            <select name="luxury_subcategory" class="form-select rounded-3">
+              <option value="">All luxury sub-categories</option>
+              {% for value, label in luxury_subcategories %}
+              <option value="{{ value }}" {% if current_luxury_subcategory == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            <small class="text-muted">Used only for boats in the Luxury category.</small>
+          </div>
+
           <div class="mb-3">
             <label class="form-label fw-bold" style="font-size: 13px;">Price per day (€)</label>
             <div class="d-flex gap-2">
@@ -143,5 +157,35 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const luxuryCategoryId = "{{ luxury_category_id|default:'' }}";
+    const categoryInputs = document.querySelectorAll('input[name="category"]');
+    const luxuryFilter = document.querySelector("#luxury-subcategory-filter");
+    const luxurySelect = luxuryFilter?.querySelector('select[name="luxury_subcategory"]');
+
+    function updateLuxuryFilter() {
+      const selectedCategory = document.querySelector('input[name="category"]:checked')?.value || "";
+      const showLuxuryFilter = selectedCategory === luxuryCategoryId;
+
+      if (!luxuryFilter) {
+        return;
+      }
+
+      luxuryFilter.style.display = showLuxuryFilter ? "" : "none";
+
+      if (!showLuxuryFilter && luxurySelect) {
+        luxurySelect.value = "";
+      }
+    }
+
+    categoryInputs.forEach((input) => {
+      input.addEventListener("change", updateLuxuryFilter);
+    });
+
+    updateLuxuryFilter();
+  });
+</script>
 
 {% endblock %}

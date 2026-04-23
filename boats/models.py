@@ -17,9 +17,19 @@ class Boat(models.Model):
         ('yacht', 'Yacht'),
         ('catamaran', 'Catamaran'),
     ]
+    LUXURY_SUBCATEGORY_CHOICES = [
+        ("crewed_yacht", "Crewed Yacht"),
+        ("private_charter", "Private Charter"),
+        ("sunset_cruise", "Sunset Cruise"),
+    ]
     
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='boats')
     category = models.ForeignKey(BoatCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='boats')
+    luxury_subcategory = models.CharField(
+        max_length=30,
+        choices=LUXURY_SUBCATEGORY_CHOICES,
+        blank=True,
+    )
     name = models.CharField(max_length=200)
     location = models.CharField(max_length=200)
     description = models.TextField()

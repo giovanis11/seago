@@ -7,6 +7,8 @@ class BoatImageInline(admin.TabularInline):
 
 class BoatAdmin(admin.ModelAdmin):
     inlines = [BoatImageInline]
+    list_display = ("name", "category", "luxury_subcategory", "owner", "is_approved")
+    list_filter = ("category", "luxury_subcategory", "is_approved", "is_available")
 
 admin.site.register(Boat, BoatAdmin)
 admin.site.register(BoatCategory)

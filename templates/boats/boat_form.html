@@ -24,6 +24,10 @@
         <div class="col-md-6">{{ form.category|as_crispy_field }}</div>
         <div class="col-md-6">{{ form.boat_type|as_crispy_field }}</div>
       </div>
+      <div id="luxury-subcategory-field" {% if form.category.value|stringformat:"s" != luxury_category_id|stringformat:"s" %}style="display: none;"{% endif %}>
+        {{ form.luxury_subcategory|as_crispy_field }}
+        <small class="text-muted">Luxury boats only. Other categories can leave this blank.</small>
+      </div>
       {{ form.location|as_crispy_field }}
     </div>
 
@@ -102,4 +106,29 @@
 
   </form>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const luxuryCategoryId = "{{ luxury_category_id|default:'' }}";
+    const categoryField = document.querySelector('#id_category');
+    const luxuryField = document.querySelector('#luxury-subcategory-field');
+    const luxurySelect = document.querySelector('#id_luxury_subcategory');
+
+    function updateLuxurySubcategoryField() {
+      if (!categoryField || !luxuryField) {
+        return;
+      }
+
+      const showLuxuryField = categoryField.value === luxuryCategoryId;
+      luxuryField.style.display = showLuxuryField ? "" : "none";
+
+      if (!showLuxuryField && luxurySelect) {
+        luxurySelect.value = "";
+      }
+    }
+
+    categoryField?.addEventListener("change", updateLuxurySubcategoryField);
+    updateLuxurySubcategoryField();
+  });
+</script>
 {% endblock %}

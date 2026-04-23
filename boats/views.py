@@ -23,6 +23,18 @@ def safe_file_url(file_field):
     return None
 
 
+def boat_form_context(form, action, boat=None):
+    luxury_category = BoatCategory.objects.filter(name__iexact="Luxury").first()
+    context = {
+        "form": form,
+        "action": action,
+        "luxury_category_id": luxury_category.id if luxury_category else "",
+    }
+    if boat is not None:
+        context["boat"] = boat
+    return context
+
+
 def homepage(request):
     featured_boats = Boat.objects.filter(is_approved=True, is_available=True).order_by('-created_at')[:6]
     random_boats = Boat.objects.filter(is_approved=True, is_available=True).order_by('?')[:6]
@@ -40,6 +52,7 @@ def boat_list(request):
     q = request.GET.get('q')
     boat_type = request.GET.get('boat_type')
     category = request.GET.get('category')
+    luxury_subcategory = request.GET.get('luxury_subcategory')
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
     capacity = request.GET.get('capacity')
@@ -52,6 +65,8 @@ def boat_list(request):
         boats = boats.filter(boat_type=boat_type)
     if category:
         boats = boats.filter(category__id=category)
+    if luxury_subcategory:
+        boats = boats.filter(luxury_subcategory=luxury_subcategory)
     if min_price:
         boats = boats.filter(price_per_day__gte=min_price)
     if max_price:
@@ -60,14 +75,18 @@ def boat_list(request):
         boats = boats.filter(capacity__gte=capacity)
 
     categories = BoatCategory.objects.all()
+    luxury_category = categories.filter(name__iexact="Luxury").first()
 
     return render(request, 'boats/boat_list.html', {
         'boats': boats,
         'categories': categories,
         'boat_types': Boat.BOAT_TYPE_CHOICES,
+        'luxury_subcategories': Boat.LUXURY_SUBCATEGORY_CHOICES,
+        'luxury_category_id': luxury_category.id if luxury_category else "",
         'current_q': q or '',
         'current_type': boat_type or '',
         'current_category': category or '',
+        'current_luxury_subcategory': luxury_subcategory or '',
         'current_min_price': min_price or '',
         'current_max_price': max_price or '',
         'current_capacity': capacity or '',
@@ -191,7 +210,7 @@ def boat_create(request):
         else:
             messages.success(request, 'Listing added successfully!')
             return redirect('boats:my_listings')
-    return render(request, 'boats/boat_form.html', {'form': form, 'action': 'Add'})
+    return render(request, 'boats/boat_form.html', boat_form_context(form, 'Add'))
 
 
 @login_required
@@ -223,7 +242,11 @@ def boat_edit(request, pk):
         else:
             messages.success(request, 'Listing updated.')
             return redirect('boats:my_listings')
-    return render(request, 'boats/boat_form.html', {'form': form, 'action': 'Edit', 'boat': boat})
+    return render(
+        request,
+        'boats/boat_form.html',
+        boat_form_context(form, 'Edit', boat=boat),
+    )
 
 
 @login_required
