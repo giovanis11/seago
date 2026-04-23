@@ -99,7 +99,7 @@
 
     <div class="d-flex gap-2">
       <button type="submit" class="btn rounded-pill text-white fw-bold px-4 py-2" style="background: #bb2d3c;">
-        {{ action }} listing
+        {% if action == "Edit" %}Save changes{% else %}{{ action }} listing{% endif %}
       </button>
       <a href="{% url 'boats:my_listings' %}" class="btn btn-outline-secondary rounded-pill px-4 py-2">Cancel</a>
     </div>

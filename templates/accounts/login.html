@@ -12,7 +12,9 @@
 
         {% if messages %}
           {% for message in messages %}
-            <div class="alert alert-danger rounded-pill">{{ message }}</div>
+            {% if "error" in message.tags or "warning" in message.tags %}
+              <div class="alert alert-danger rounded-pill">{{ message }}</div>
+            {% endif %}
           {% endfor %}
         {% endif %}
 
