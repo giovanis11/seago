@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: seago
+    runtime: python
+    plan: free
+    buildCommand: ./build.sh
+    startCommand: ./start.sh
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.9
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: seago-db
+          property: connectionString
+      - key: DEBUG
+        value: "false"
+      - key: DISK_MEDIA_ROOT
+        value: /var/data/media
+
+databases:
+  - name: seago-db
+    plan: free

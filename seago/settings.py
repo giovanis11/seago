@@ -10,22 +10,60 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def env_bool(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+RENDER = env_bool("RENDER", False)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-+19tfrgeqvat7!3f5ub#*zc*)d*_*uk73s6h9cr68cy4jegctd"
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-local-dev-only-change-me-before-production",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env_bool("DEBUG", not RENDER)
 
-ALLOWED_HOSTS = []
+allowed_hosts = {"127.0.0.1", "localhost", "[::1]"}
+render_hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+if render_hostname:
+    allowed_hosts.add(render_hostname)
+
+extra_allowed_hosts = os.getenv("ALLOWED_HOSTS", "")
+allowed_hosts.update(
+    host.strip() for host in extra_allowed_hosts.split(",") if host.strip()
+)
+ALLOWED_HOSTS = sorted(allowed_hosts)
+
+trusted_origins = set()
+render_external_url = os.getenv("RENDER_EXTERNAL_URL")
+if render_external_url:
+    trusted_origins.add(render_external_url)
+
+extra_trusted_origins = os.getenv("CSRF_TRUSTED_ORIGINS", "")
+trusted_origins.update(
+    origin.strip()
+    for origin in extra_trusted_origins.split(",")
+    if origin.strip()
+)
+CSRF_TRUSTED_ORIGINS = sorted(trusted_origins)
 
 
 # Application definition
@@ -47,6 +85,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -79,12 +118,22 @@ WSGI_APPLICATION = "seago.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+database_url = os.getenv("DATABASE_URL")
+if database_url:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            database_url,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Password validation
@@ -121,17 +170,44 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
-CRISPY_TEMPLATE_PACK = 'bootstrap5'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
-LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/accounts/dashboard/'
-LOGOUT_REDIRECT_URL = '/'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-AUTH_USER_MODEL = 'accounts.User'
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/accounts/dashboard/"
+LOGOUT_REDIRECT_URL = "/"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+AUTH_USER_MODEL = "accounts.User"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = (
+    Path(os.getenv("DISK_MEDIA_ROOT", "/var/data/media"))
+    if RENDER
+    else BASE_DIR / "media"
+)
+SERVE_MEDIA = env_bool("SERVE_MEDIA", True)
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", True)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "31536000"))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool(
+        "SECURE_HSTS_INCLUDE_SUBDOMAINS",
+        True,
+    )
+    SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", True)

@@ -1,0 +1,443 @@
+[
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$syDCT9co5sjFdssOqwR61b$VJXirgZc8b3tCA/5NU0VYGE+2rpF93ka0+mXxXqitzM=",
+    "last_login": "2026-03-27T12:02:40.480Z",
+    "is_superuser": true,
+    "username": "nikos",
+    "first_name": "",
+    "last_name": "",
+    "email": "giovanis33g@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-03-20T00:39:30.644Z",
+    "is_owner": true,
+    "phone": "",
+    "avatar": "",
+    "bio": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$E19tFwSefyNa192nGVOzCK$1H4nFtyLAkh++BiC+SyD6GkwCAr16+PReu6lAfareU8=",
+    "last_login": "2026-04-21T22:18:00.257Z",
+    "is_superuser": false,
+    "username": "test1",
+    "first_name": "",
+    "last_name": "",
+    "email": "test@test.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-20T19:19:30.598Z",
+    "is_owner": true,
+    "phone": "",
+    "avatar": "avatars/yacht.jpg",
+    "bio": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "accounts.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$YJNVFcZZQCHoBSjesyh7tL$0QNg8Wv1VMTf+I9+wdENmdLYxLenVG8clx+XOo7lhuc=",
+    "last_login": "2026-04-21T21:46:39.130Z",
+    "is_superuser": false,
+    "username": "user",
+    "first_name": "",
+    "last_name": "",
+    "email": "giovanis33g@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-03-21T11:03:37.104Z",
+    "is_owner": false,
+    "phone": "",
+    "avatar": "avatars/turtle.jpg",
+    "bio": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "boats.boatcategory",
+  "pk": 1,
+  "fields": {
+    "name": "Luxury",
+    "description": ""
+  }
+},
+{
+  "model": "boats.boatcategory",
+  "pk": 2,
+  "fields": {
+    "name": "Party",
+    "description": ""
+  }
+},
+{
+  "model": "boats.boatcategory",
+  "pk": 3,
+  "fields": {
+    "name": "Family",
+    "description": ""
+  }
+},
+{
+  "model": "boats.boatcategory",
+  "pk": 4,
+  "fields": {
+    "name": "Budget",
+    "description": ""
+  }
+},
+{
+  "model": "boats.boat",
+  "pk": 1,
+  "fields": {
+    "owner": [
+      "nikos"
+    ],
+    "category": 1,
+    "name": "Muerta 25'",
+    "location": "Zakynthos, Greece",
+    "description": "Big Luxury Yacht for a once in a life experience",
+    "capacity": 10,
+    "boat_type": "yacht",
+    "price_per_day": "200.00",
+    "features": "Drinks and snacks",
+    "created_at": "2026-03-20T20:51:28.482Z",
+    "is_approved": true,
+    "is_available": true
+  }
+},
+{
+  "model": "boats.boat",
+  "pk": 2,
+  "fields": {
+    "owner": [
+      "test1"
+    ],
+    "category": 2,
+    "name": "McDavid P",
+    "location": "Athens,Greece",
+    "description": "Party boat for wild night Parties",
+    "capacity": 20,
+    "boat_type": "catamaran",
+    "price_per_day": "500.00",
+    "features": "Drinks",
+    "created_at": "2026-03-20T20:52:57.518Z",
+    "is_approved": true,
+    "is_available": true
+  }
+},
+{
+  "model": "boats.boat",
+  "pk": 3,
+  "fields": {
+    "owner": [
+      "test1"
+    ],
+    "category": 3,
+    "name": "Perrier 22'",
+    "location": "Zakynthos, Greece",
+    "description": "family vacation boat for your loved ones",
+    "capacity": 200,
+    "boat_type": "sailboat",
+    "price_per_day": "160.00",
+    "features": "WiFi, Food",
+    "created_at": "2026-03-20T21:39:41.200Z",
+    "is_approved": true,
+    "is_available": true
+  }
+},
+{
+  "model": "boats.boat",
+  "pk": 4,
+  "fields": {
+    "owner": [
+      "nikos"
+    ],
+    "category": 4,
+    "name": "Gillera Mini",
+    "location": "Athens, Greece",
+    "description": "Budget friendly boat for you and another one",
+    "capacity": 5,
+    "boat_type": "motorboat",
+    "price_per_day": "100.00",
+    "features": "Wifi, drinks and snacks",
+    "created_at": "2026-03-20T21:44:04.477Z",
+    "is_approved": true,
+    "is_available": true
+  }
+},
+{
+  "model": "boats.boat",
+  "pk": 5,
+  "fields": {
+    "owner": [
+      "nikos"
+    ],
+    "category": 1,
+    "name": "Suprema",
+    "location": "Zakynthos, Greece",
+    "description": "Luxury catamaran boat for the day",
+    "capacity": 50,
+    "boat_type": "catamaran",
+    "price_per_day": "700.00",
+    "features": "Drinks and snacks",
+    "created_at": "2026-03-20T21:46:09.432Z",
+    "is_approved": true,
+    "is_available": true
+  }
+},
+{
+  "model": "boats.boat",
+  "pk": 9,
+  "fields": {
+    "owner": [
+      "test1"
+    ],
+    "category": 1,
+    "name": "Galatino 69'",
+    "location": "Santorini, Greece",
+    "description": "4t224f",
+    "capacity": 24,
+    "boat_type": "sailboat",
+    "price_per_day": "230.00",
+    "features": "iehobv ioh2r2hbir eihetihb",
+    "created_at": "2026-03-21T13:43:28.060Z",
+    "is_approved": true,
+    "is_available": true
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 1,
+  "fields": {
+    "boat": 2,
+    "image": "boat_images/yacht.jpg",
+    "is_cover": true
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 2,
+  "fields": {
+    "boat": 1,
+    "image": "boat_images/charter_yacht.jpg",
+    "is_cover": false
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 3,
+  "fields": {
+    "boat": 3,
+    "image": "boat_images/boat.jpg",
+    "is_cover": true
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 4,
+  "fields": {
+    "boat": 4,
+    "image": "boat_images/boat_mC2fq7J.jpg",
+    "is_cover": false
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 5,
+  "fields": {
+    "boat": 5,
+    "image": "boat_images/catamaran.jpg",
+    "is_cover": false
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 6,
+  "fields": {
+    "boat": 2,
+    "image": "boat_images/charter_yacht_k3Po14J.jpg",
+    "is_cover": false
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 7,
+  "fields": {
+    "boat": 2,
+    "image": "boat_images/yacht_3ongoQe.jpg",
+    "is_cover": false
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 8,
+  "fields": {
+    "boat": 2,
+    "image": "boat_images/catamaran_IUizSMV.jpg",
+    "is_cover": false
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 10,
+  "fields": {
+    "boat": 2,
+    "image": "boat_images/yacht_I2AoRVa.jpg",
+    "is_cover": false
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 11,
+  "fields": {
+    "boat": 2,
+    "image": "boat_images/451018.jpg",
+    "is_cover": false
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 21,
+  "fields": {
+    "boat": 9,
+    "image": "boat_images/catamaran_eNyxfte.jpg",
+    "is_cover": false
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 22,
+  "fields": {
+    "boat": 9,
+    "image": "boat_images/charter_yacht_K8K1Wq4.jpg",
+    "is_cover": true
+  }
+},
+{
+  "model": "boats.boatimage",
+  "pk": 23,
+  "fields": {
+    "boat": 9,
+    "image": "boat_images/452533.jpg",
+    "is_cover": false
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 1,
+  "fields": {
+    "renter": [
+      "user"
+    ],
+    "boat": 2,
+    "start_date": "2026-03-29",
+    "end_date": "2026-03-30",
+    "guests": 1,
+    "total_price": "500.00",
+    "status": "confirmed",
+    "created_at": "2026-03-21T12:09:37.670Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 2,
+  "fields": {
+    "renter": [
+      "user"
+    ],
+    "boat": 9,
+    "start_date": "2026-03-22",
+    "end_date": "2026-03-23",
+    "guests": 3,
+    "total_price": "230.00",
+    "status": "confirmed",
+    "created_at": "2026-03-22T17:50:20.137Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 3,
+  "fields": {
+    "renter": [
+      "user"
+    ],
+    "boat": 2,
+    "start_date": "2026-03-30",
+    "end_date": "2026-03-31",
+    "guests": 1,
+    "total_price": "500.00",
+    "status": "cancelled",
+    "created_at": "2026-03-22T19:09:44.434Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 4,
+  "fields": {
+    "renter": [
+      "user"
+    ],
+    "boat": 2,
+    "start_date": "2026-03-27",
+    "end_date": "2026-03-28",
+    "guests": 1,
+    "total_price": "500.00",
+    "status": "confirmed",
+    "created_at": "2026-03-26T13:37:40.730Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 5,
+  "fields": {
+    "renter": [
+      "user"
+    ],
+    "boat": 2,
+    "start_date": "2026-04-19",
+    "end_date": "2026-04-20",
+    "guests": 1,
+    "total_price": "500.00",
+    "status": "confirmed",
+    "created_at": "2026-04-18T20:37:40.422Z"
+  }
+},
+{
+  "model": "bookings.booking",
+  "pk": 6,
+  "fields": {
+    "renter": [
+      "user"
+    ],
+    "boat": 2,
+    "start_date": "2026-04-26",
+    "end_date": "2026-04-27",
+    "guests": 1,
+    "total_price": "500.00",
+    "status": "pending",
+    "created_at": "2026-04-21T21:50:50.470Z"
+  }
+},
+{
+  "model": "reviews.review",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "user"
+    ],
+    "boat": 2,
+    "rating": 5,
+    "comment": "Great work",
+    "created_at": "2026-03-22T18:45:25.677Z"
+  }
+}
+]
