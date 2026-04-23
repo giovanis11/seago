@@ -1,10 +1,17 @@
+import logging
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db import transaction
+from django.db.models import Q
+
 from .models import Boat, BoatCategory, WishList, BoatImage
 from .forms import BoatForm
-from django.db.models import Q
+
+
+logger = logging.getLogger(__name__)
 
 
 def safe_file_url(file_field):
@@ -161,20 +168,29 @@ def boat_create(request):
         return redirect('accounts:become_host')
     form = BoatForm(request.POST or None, request.FILES or None)
     if form.is_valid():
-        boat = form.save(commit=False)
-        boat.owner = request.user
-        boat.is_approved = True
-        boat.save()
-        images = request.FILES.getlist('images')
-        cover_index = int(request.POST.get('cover_index', 0))
-        for i, img in enumerate(images):
-            BoatImage.objects.create(
-                boat=boat,
-                image=img,
-                is_cover=(i == cover_index)
+        try:
+            with transaction.atomic():
+                boat = form.save(commit=False)
+                boat.owner = request.user
+                boat.is_approved = True
+                boat.save()
+                images = request.FILES.getlist('images')
+                cover_index = int(request.POST.get('cover_index', 0))
+                for i, img in enumerate(images):
+                    BoatImage.objects.create(
+                        boat=boat,
+                        image=img,
+                        is_cover=(i == cover_index)
+                    )
+        except Exception:
+            logger.exception("Listing creation failed during boat/image save.")
+            messages.error(
+                request,
+                "We couldn't save this listing right now. Please try again, or check the uploaded image and Cloudinary setup.",
             )
-        messages.success(request, 'Listing added successfully!')
-        return redirect('boats:my_listings')
+        else:
+            messages.success(request, 'Listing added successfully!')
+            return redirect('boats:my_listings')
     return render(request, 'boats/boat_form.html', {'form': form, 'action': 'Add'})
 
 
@@ -183,21 +199,30 @@ def boat_edit(request, pk):
     boat = get_object_or_404(Boat, pk=pk, owner=request.user)
     form = BoatForm(request.POST or None, request.FILES or None, instance=boat)
     if form.is_valid():
-        form.save()
-        cover_id = request.POST.get('cover_image_id')
-        if cover_id:
-            boat.images.update(is_cover=False)
-            BoatImage.objects.filter(id=cover_id, boat=boat).update(is_cover=True)
-        images = request.FILES.getlist('images')
-        cover_index = int(request.POST.get('cover_index', 0))
-        for i, img in enumerate(images):
-            BoatImage.objects.create(
-                boat=boat,
-                image=img,
-                is_cover=(i == cover_index)
+        try:
+            with transaction.atomic():
+                form.save()
+                cover_id = request.POST.get('cover_image_id')
+                if cover_id:
+                    boat.images.update(is_cover=False)
+                    BoatImage.objects.filter(id=cover_id, boat=boat).update(is_cover=True)
+                images = request.FILES.getlist('images')
+                cover_index = int(request.POST.get('cover_index', 0))
+                for i, img in enumerate(images):
+                    BoatImage.objects.create(
+                        boat=boat,
+                        image=img,
+                        is_cover=(i == cover_index)
+                    )
+        except Exception:
+            logger.exception("Listing update failed during boat/image save.")
+            messages.error(
+                request,
+                "We couldn't update this listing right now. Please try again, or check the uploaded image and Cloudinary setup.",
             )
-        messages.success(request, 'Listing updated.')
-        return redirect('boats:my_listings')
+        else:
+            messages.success(request, 'Listing updated.')
+            return redirect('boats:my_listings')
     return render(request, 'boats/boat_form.html', {'form': form, 'action': 'Edit', 'boat': boat})
 
 
