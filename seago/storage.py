@@ -9,8 +9,16 @@ from django.utils.deconstruct import deconstructible
 CLOUDINARY_PREFIX = "cloudinary:"
 
 
+def normalized_cloudinary_url():
+    value = os.getenv("CLOUDINARY_URL", "").strip()
+    if value.startswith("CLOUDINARY_URL="):
+        value = value.split("=", 1)[1].strip()
+        os.environ["CLOUDINARY_URL"] = value
+    return value
+
+
 def cloudinary_enabled():
-    return bool(os.getenv("CLOUDINARY_URL"))
+    return bool(normalized_cloudinary_url())
 
 
 def is_cloudinary_name(name):
@@ -42,6 +50,7 @@ class HybridMediaStorage(Storage):
         if not cloudinary_enabled():
             return self.local_storage._save(name, content)
 
+        normalized_cloudinary_url()
         from cloudinary import uploader
 
         folder = os.path.dirname(name).replace("\\", "/").strip("/") or None
@@ -63,6 +72,7 @@ class HybridMediaStorage(Storage):
             return
 
         if is_cloudinary_name(name):
+            normalized_cloudinary_url()
             from cloudinary import uploader
 
             uploader.destroy(
@@ -91,6 +101,7 @@ class HybridMediaStorage(Storage):
 
     def size(self, name):
         if is_cloudinary_name(name):
+            normalized_cloudinary_url()
             from cloudinary import api
 
             resource = api.resource(decode_cloudinary_name(name), resource_type="image")
@@ -102,6 +113,7 @@ class HybridMediaStorage(Storage):
             return ""
 
         if is_cloudinary_name(name):
+            normalized_cloudinary_url()
             from cloudinary.utils import cloudinary_url
 
             url, _ = cloudinary_url(
