@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import Q
+from django.views.decorators.http import require_POST
 
 from .models import Boat, BoatCategory, WishList, BoatImage
 from .forms import BoatForm
@@ -260,8 +261,18 @@ def boat_delete(request, pk):
 
 
 @login_required
+@require_POST
 def wishlist(request, pk):
-    return HttpResponse('Wishlist coming soon')
+    boat = get_object_or_404(Boat, pk=pk, is_approved=True)
+    wishlist_item, created = WishList.objects.get_or_create(user=request.user, boat=boat)
+
+    if created:
+        messages.success(request, "Boat saved to your wishlist.")
+    else:
+        wishlist_item.delete()
+        messages.success(request, "Boat removed from your wishlist.")
+
+    return redirect('boats:boat_detail', pk=pk)
 
 
 @login_required

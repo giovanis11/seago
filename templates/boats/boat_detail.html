@@ -101,6 +101,22 @@
       </div>
 
       <div class="mb-4 pb-4 border-bottom">
+        {% if request.user.is_authenticated %}
+        <form method="POST" action="{% url 'boats:wishlist' boat.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn rounded-pill px-4 py-2 fw-bold {% if in_wishlist %}btn-danger text-white{% else %}btn-outline-danger{% endif %}">
+            <i class="bi {% if in_wishlist %}bi-heart-fill{% else %}bi-heart{% endif %} me-2"></i>
+            {% if in_wishlist %}Saved to wishlist{% else %}Save to wishlist{% endif %}
+          </button>
+        </form>
+        {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-outline-danger rounded-pill px-4 py-2 fw-bold">
+          <i class="bi bi-heart me-2"></i>Log in to save
+        </a>
+        {% endif %}
+      </div>
+
+      <div class="mb-4 pb-4 border-bottom">
         <h5 class="fw-bold mb-3">About this boat</h5>
         <p class="text-muted">{{ boat.description }}</p>
       </div>
