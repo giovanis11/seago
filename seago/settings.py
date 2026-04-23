@@ -26,6 +26,18 @@ def env_bool(name, default=False):
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def normalized_env_value(name):
+    value = os.getenv(name, "").strip()
+    prefix = f"{name}="
+    if value.startswith(prefix):
+        value = value[len(prefix) :].strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+        value = value[1:-1].strip()
+    if value:
+        os.environ[name] = value
+    return value
+
+
 RENDER = env_bool("RENDER", False)
 
 
@@ -118,7 +130,7 @@ WSGI_APPLICATION = "seago.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-database_url = os.getenv("DATABASE_URL")
+database_url = normalized_env_value("DATABASE_URL")
 if database_url:
     DATABASES = {
         "default": dj_database_url.parse(
