@@ -4,10 +4,10 @@
 
 <!-- Mobile search - homepage only -->
 <div class="d-lg-none border-bottom bg-white px-3 py-2">
-  <div class="d-flex align-items-center rounded-pill border px-3 py-2 bg-white" style="height: 48px;">
+  <button type="button" class="btn w-100 d-flex align-items-center rounded-pill border px-3 py-2 bg-white text-start" data-bs-toggle="modal" data-bs-target="#mobileSearchModal" style="height: 48px;">
     <i class="bi bi-search text-muted me-2"></i>
     <span class="text-muted" style="font-size: 14px;">Start your search</span>
-  </div>
+  </button>
 </div>
 
 <style>
@@ -100,5 +100,106 @@
   {% endif %}
 
 </div>
+
+<div class="modal fade" id="mobileSearchModal" tabindex="-1">
+  <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-centered">
+    <div class="modal-content border-0">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">Search boats</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <form method="GET" action="{% url 'boats:boat_list' %}">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="font-size: 13px;">Where</label>
+            <input type="text" name="q" list="mobile-locations-list" class="form-control rounded-3" placeholder="Search by name or destination">
+            <datalist id="mobile-locations-list">
+              {% for location in all_locations %}
+                <option value="{{ location }}">
+              {% endfor %}
+            </datalist>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="font-size: 13px;">Boat type</label>
+            <select name="boat_type" class="form-select rounded-3">
+              <option value="">All types</option>
+              {% for value, label in boat_types %}
+              <option value="{{ value }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="font-size: 13px;">Category</label>
+            <select name="category" id="mobile-home-category" class="form-select rounded-3">
+              <option value="">All categories</option>
+              {% for cat in categories %}
+              <option value="{{ cat.id }}">{{ cat.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3" id="mobile-home-luxury-filter" style="display: none;">
+            <label class="form-label fw-bold" style="font-size: 13px;">Luxury sub-category</label>
+            <select name="luxury_subcategory" id="mobile-home-luxury-select" class="form-select rounded-3">
+              <option value="">All luxury sub-categories</option>
+              {% for value, label in luxury_subcategories %}
+              <option value="{{ value }}">{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-bold" style="font-size: 13px;">Min price</label>
+              <input type="number" name="min_price" class="form-control rounded-3" placeholder="0">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-bold" style="font-size: 13px;">Max price</label>
+              <input type="number" name="max_price" class="form-control rounded-3" placeholder="1000">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold" style="font-size: 13px;">Guests</label>
+            <input type="number" name="capacity" min="1" class="form-control rounded-3" placeholder="Add guests">
+          </div>
+        </div>
+
+        <div class="modal-footer border-0 pt-0">
+          <a href="{% url 'boats:boat_list' %}" class="btn btn-outline-secondary rounded-pill px-4">Clear</a>
+          <button type="submit" class="btn rounded-pill text-white fw-bold px-4" style="background: #bb2d3c;">Show results</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const luxuryCategoryId = "{{ luxury_category_id|default:'' }}";
+    const categorySelect = document.querySelector("#mobile-home-category");
+    const luxuryFilter = document.querySelector("#mobile-home-luxury-filter");
+    const luxurySelect = document.querySelector("#mobile-home-luxury-select");
+
+    function updateLuxuryFilter() {
+      if (!categorySelect || !luxuryFilter) {
+        return;
+      }
+
+      const showLuxuryFilter = categorySelect.value === luxuryCategoryId;
+      luxuryFilter.style.display = showLuxuryFilter ? "" : "none";
+
+      if (!showLuxuryFilter && luxurySelect) {
+        luxurySelect.value = "";
+      }
+    }
+
+    categorySelect?.addEventListener("change", updateLuxuryFilter);
+    updateLuxuryFilter();
+  });
+</script>
 
 {% endblock %}

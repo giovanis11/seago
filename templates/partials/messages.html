@@ -1,0 +1,5 @@
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ alert_type|default:'success' }} rounded-pill{% if centered %} text-center{% endif %}">{{ message }}</div>
+  {% endfor %}
+{% endif %}

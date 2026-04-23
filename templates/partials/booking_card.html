@@ -1,0 +1,55 @@
+<div class="border rounded-4 p-4">
+  <div class="row align-items-center">
+    <div class="col-md-2">
+      {% if booking.boat.get_cover_image %}
+        <img src="{{ booking.boat.get_cover_image }}" class="rounded-3 w-100" style="height: 80px; object-fit: cover;">
+      {% endif %}
+    </div>
+    <div class="{% if owner_view %}col-md-5{% else %}col-md-6{% endif %}">
+      <div class="fw-bold">{{ booking.boat.name }}</div>
+      {% if owner_view %}
+        <div class="text-muted" style="font-size: 13px;">Booked by {{ booking.renter.username }}</div>
+      {% else %}
+        <div class="text-muted" style="font-size: 13px;">{{ booking.boat.location }}</div>
+      {% endif %}
+      <div class="text-muted" style="font-size: 13px;">{{ booking.start_date }} → {{ booking.end_date }} · {{ booking.guests }} guests</div>
+      <div class="{% if owner_view %}{% else %}mt-1 {% endif %}" style="font-size: 13px;">Total: <strong>€{{ booking.total_price }}</strong></div>
+    </div>
+    <div class="{% if owner_view %}col-md-5{% else %}col-md-4{% endif %} text-end">
+      {% if booking.status == 'pending' %}
+        <span class="badge bg-warning text-dark px-3 py-2{% if owner_view %} mb-2 d-block{% endif %}">Pending</span>
+        {% if owner_view %}
+          <div class="d-flex gap-2 justify-content-end">
+            <form method="POST" action="{% url 'bookings:booking_update' booking.pk %}">
+              {% csrf_token %}
+              <input type="hidden" name="status" value="confirmed">
+              <button type="submit" class="btn btn-success btn-sm rounded-pill px-3">Accept</button>
+            </form>
+            <form method="POST" action="{% url 'bookings:booking_update' booking.pk %}">
+              {% csrf_token %}
+              <input type="hidden" name="status" value="cancelled">
+              <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">Decline</button>
+            </form>
+          </div>
+        {% else %}
+          <form method="POST" action="{% url 'bookings:booking_cancel' booking.pk %}" class="mt-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">Cancel</button>
+          </form>
+        {% endif %}
+      {% elif booking.status == 'confirmed' %}
+        <span class="badge bg-success px-3 py-2">Confirmed</span>
+        {% if not owner_view %}
+          <form method="POST" action="{% url 'bookings:booking_cancel' booking.pk %}" class="mt-2">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">Cancel</button>
+          </form>
+        {% endif %}
+      {% elif booking.status == 'cancelled' %}
+        <span class="badge bg-danger px-3 py-2">Cancelled</span>
+      {% elif booking.status == 'completed' %}
+        <span class="badge bg-secondary px-3 py-2">Completed</span>
+      {% endif %}
+    </div>
+  </div>
+</div>

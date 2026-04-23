@@ -11,7 +11,14 @@ from boats.models import Boat
 @login_required
 def booking_list(request):
     bookings = Booking.objects.filter(renter=request.user).order_by('-created_at')
-    return render(request, 'bookings/booking_list.html', {'bookings': bookings})
+    return render(
+        request,
+        'bookings/booking_list.html',
+        {
+            'bookings': bookings,
+            'browse_boats_url': '/boats/',
+        },
+    )
 
 def booking_detail(request, pk):
     return HttpResponse(f'Booking detail for booking {pk} coming soon')

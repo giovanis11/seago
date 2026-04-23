@@ -78,6 +78,7 @@ def dashboard_view(request):
         context = {
             'my_boats': my_boats,
             'incoming_bookings': incoming_bookings,
+            'add_listing_url': '/boats/create/',
         }
         return render(request, 'accounts/dashboard_owner.html', context)
     else:
@@ -88,6 +89,7 @@ def dashboard_view(request):
         context = {
             'my_bookings': my_bookings,
             'wishlist': wishlist,
+            'browse_boats_url': '/boats/',
         }
         return render(request, 'accounts/dashboard_renter.html', context)
 

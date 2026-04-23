@@ -40,10 +40,14 @@ def homepage(request):
     featured_boats = Boat.objects.filter(is_approved=True, is_available=True).order_by('-created_at')[:6]
     random_boats = Boat.objects.filter(is_approved=True, is_available=True).order_by('?')[:6]
     categories = BoatCategory.objects.all()
+    luxury_category = categories.filter(name__iexact="Luxury").first()
     return render(request, 'boats/home.html', {
         'featured_boats': featured_boats,
         'random_boats': random_boats,
         'categories': categories,
+        'boat_types': Boat.BOAT_TYPE_CHOICES,
+        'luxury_subcategories': Boat.LUXURY_SUBCATEGORY_CHOICES,
+        'luxury_category_id': luxury_category.id if luxury_category else "",
     })
 
 
@@ -278,4 +282,11 @@ def wishlist(request, pk):
 @login_required
 def my_listings(request):
     boats = Boat.objects.filter(owner=request.user)
-    return render(request, 'boats/my_listings.html', {'boats': boats})
+    return render(
+        request,
+        'boats/my_listings.html',
+        {
+            'boats': boats,
+            'add_listing_url': '/boats/create/',
+        },
+    )
