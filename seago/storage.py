@@ -9,14 +9,19 @@ from django.utils.deconstruct import deconstructible
 CLOUDINARY_PREFIX = "cloudinary:"
 
 
-def normalized_cloudinary_url():
-    value = os.getenv("CLOUDINARY_URL", "").strip()
-    if value.startswith("CLOUDINARY_URL="):
-        value = value.split("=", 1)[1].strip()
+def normalized_env_value(name):
+    value = os.getenv(name, "").strip()
+    prefix = f"{name}="
+    if value.startswith(prefix):
+        value = value[len(prefix) :].strip()
     if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
         value = value[1:-1].strip()
-    os.environ["CLOUDINARY_URL"] = value
+    os.environ[name] = value
     return value
+
+
+def normalized_cloudinary_url():
+    return normalized_env_value("CLOUDINARY_URL")
 
 
 def cloudinary_enabled():
@@ -24,17 +29,31 @@ def cloudinary_enabled():
 
 
 def configure_cloudinary():
+    cloud_name = normalized_env_value("CLOUDINARY_CLOUD_NAME")
+    api_key = normalized_env_value("CLOUDINARY_API_KEY")
+    api_secret = normalized_env_value("CLOUDINARY_API_SECRET")
     url = normalized_cloudinary_url()
-    if not url:
+
+    if not url and not (cloud_name and api_key and api_secret):
         return
 
     import cloudinary
 
-    cloudinary.config(
-        cloudinary_url=url,
-        secure=True,
-        signature_algorithm="sha256",
-    )
+    config = {
+        "secure": True,
+        "signature_algorithm": "sha256",
+    }
+
+    if cloud_name and api_key and api_secret:
+        config.update(
+            cloud_name=cloud_name,
+            api_key=api_key,
+            api_secret=api_secret,
+        )
+    else:
+        config["cloudinary_url"] = url
+
+    cloudinary.config(**config)
 
 
 def is_cloudinary_name(name):
