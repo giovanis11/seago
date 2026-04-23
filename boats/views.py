@@ -182,11 +182,11 @@ def boat_create(request):
                         image=img,
                         is_cover=(i == cover_index)
                     )
-        except Exception:
+        except Exception as exc:
             logger.exception("Listing creation failed during boat/image save.")
             messages.error(
                 request,
-                "We couldn't save this listing right now. Please try again, or check the uploaded image and Cloudinary setup.",
+                f"We couldn't save this listing right now: {exc.__class__.__name__}: {str(exc)[:180]}",
             )
         else:
             messages.success(request, 'Listing added successfully!')
@@ -214,11 +214,11 @@ def boat_edit(request, pk):
                         image=img,
                         is_cover=(i == cover_index)
                     )
-        except Exception:
+        except Exception as exc:
             logger.exception("Listing update failed during boat/image save.")
             messages.error(
                 request,
-                "We couldn't update this listing right now. Please try again, or check the uploaded image and Cloudinary setup.",
+                f"We couldn't update this listing right now: {exc.__class__.__name__}: {str(exc)[:180]}",
             )
         else:
             messages.success(request, 'Listing updated.')

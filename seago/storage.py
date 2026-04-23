@@ -13,7 +13,9 @@ def normalized_cloudinary_url():
     value = os.getenv("CLOUDINARY_URL", "").strip()
     if value.startswith("CLOUDINARY_URL="):
         value = value.split("=", 1)[1].strip()
-        os.environ["CLOUDINARY_URL"] = value
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+        value = value[1:-1].strip()
+    os.environ["CLOUDINARY_URL"] = value
     return value
 
 
