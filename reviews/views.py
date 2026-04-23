@@ -33,6 +33,6 @@ def review_create(request, boat_id):
 
 @login_required
 def review_delete(request, pk):
-    review = get_object_or_404(Review, pk=pk, renter=request.user)
+    review = get_object_or_404(Review, pk=pk, user=request.user)
     review.delete()
     return JsonResponse({'status': 'deleted'})
