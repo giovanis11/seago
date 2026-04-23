@@ -7,6 +7,15 @@ from .forms import BoatForm
 from django.db.models import Q
 
 
+def safe_file_url(file_field):
+    try:
+        if file_field and getattr(file_field, "name", ""):
+            return file_field.url
+    except Exception:
+        return None
+    return None
+
+
 def homepage(request):
     featured_boats = Boat.objects.filter(is_approved=True, is_available=True).order_by('-created_at')[:6]
     random_boats = Boat.objects.filter(is_approved=True, is_available=True).order_by('?')[:6]
@@ -59,24 +68,89 @@ def boat_list(request):
 
 
 def boat_detail(request, pk):
-    boat = get_object_or_404(Boat, pk=pk, is_approved=True)
-    images = boat.images.all()
-    reviews = boat.reviews.all()
-    recommended = Boat.objects.filter(
+    boat = get_object_or_404(
+        Boat.objects.select_related("owner", "category").prefetch_related(
+            "images",
+            "reviews__user",
+        ),
+        pk=pk,
+        is_approved=True,
+    )
+    images = list(boat.images.all())
+    reviews = list(boat.reviews.select_related("user").all())
+    recommended = list(
+        Boat.objects.select_related("owner")
+        .prefetch_related("images")
+        .filter(
         is_approved=True,
         is_available=True,
         category=boat.category
-    ).exclude(pk=pk)[:4]
+        )
+        .exclude(pk=pk)[:4]
+    )
 
     in_wishlist = False
     if request.user.is_authenticated:
         in_wishlist = WishList.objects.filter(user=request.user, boat=boat).exists()
 
+    gallery_images = []
+    for image in images:
+        image_url = safe_file_url(image.image)
+        if image_url:
+            gallery_images.append(
+                {
+                    "url": image_url,
+                    "is_cover": image.is_cover,
+                }
+            )
+
+    cover_image_url = next(
+        (image["url"] for image in gallery_images if image["is_cover"]),
+        gallery_images[0]["url"] if gallery_images else None,
+    )
+
+    owner_avatar_url = safe_file_url(boat.owner.avatar)
+    features_list = [item.strip() for item in boat.features.replace(",", " ").split() if item.strip()]
+
+    review_cards = []
+    for review in reviews:
+        review_cards.append(
+            {
+                "user": review.user,
+                "avatar_url": safe_file_url(review.user.avatar),
+                "rating": review.rating,
+                "comment": review.comment,
+                "created_at": review.created_at,
+            }
+        )
+
+    recommended_cards = []
+    for rec_boat in recommended:
+        rec_images = []
+        for image in rec_boat.images.all():
+            image_url = safe_file_url(image.image)
+            if image_url:
+                rec_images.append({"url": image_url, "is_cover": image.is_cover})
+        rec_cover_url = next(
+            (image["url"] for image in rec_images if image["is_cover"]),
+            rec_images[0]["url"] if rec_images else None,
+        )
+        recommended_cards.append(
+            {
+                "boat": rec_boat,
+                "cover_url": rec_cover_url,
+            }
+        )
+
     return render(request, 'boats/boat_detail.html', {
         'boat': boat,
-        'images': images,
-        'reviews': reviews,
-        'recommended': recommended,
+        'gallery_images': gallery_images,
+        'gallery_count': len(gallery_images),
+        'cover_image_url': cover_image_url,
+        'owner_avatar_url': owner_avatar_url,
+        'features_list': features_list,
+        'reviews': review_cards,
+        'recommended': recommended_cards,
         'in_wishlist': in_wishlist,
     })
 

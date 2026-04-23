@@ -16,8 +16,6 @@ services:
           property: connectionString
       - key: DEBUG
         value: "false"
-      - key: DISK_MEDIA_ROOT
-        value: /var/data/media
 
 databases:
   - name: seago-db

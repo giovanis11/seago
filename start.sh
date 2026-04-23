@@ -2,10 +2,10 @@
 set -o errexit
 
 PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
-MEDIA_ROOT="${DISK_MEDIA_ROOT:-/var/data/media}"
+MEDIA_ROOT="${DISK_MEDIA_ROOT:-}"
 SEED_MEDIA_ROOT="${RENDER_MEDIA_SEED_PATH:-${PROJECT_ROOT}/media}"
 
-if [ -d "$SEED_MEDIA_ROOT" ]; then
+if [ -n "$MEDIA_ROOT" ] && [ -d "$SEED_MEDIA_ROOT" ]; then
   mkdir -p "$MEDIA_ROOT"
 
   if [ -z "$(find "$MEDIA_ROOT" -mindepth 1 -print -quit 2>/dev/null)" ]; then

@@ -9,7 +9,7 @@
   <h2 class="fw-bold mb-1">{{ boat.name }}</h2>
   <p class="text-muted mb-3">{{ boat.location }} · {{ boat.get_boat_type_display }} · {{ boat.capacity }} guests</p>
 
-  {% with images_count=images.count %}
+  {% with images_count=gallery_count %}
   <div class="position-relative mb-4" style="border-radius: 24px; overflow: hidden; height: 420px;">
 
     {% if images_count == 0 %}
@@ -19,18 +19,18 @@
 
     {% elif images_count == 1 %}
     <div class="h-100">
-      <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+      <img src="{{ cover_image_url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
     </div>
 
     {% elif images_count == 2 %}
     <div class="row g-2 h-100">
       <div class="col-6 h-100">
-        <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+        <img src="{{ cover_image_url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
       </div>
-      {% for image in images %}
+      {% for image in gallery_images %}
         {% if not image.is_cover %}
         <div class="col-6 h-100">
-          <img src="{{ image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+          <img src="{{ image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
         </div>
         {% endif %}
       {% endfor %}
@@ -39,13 +39,13 @@
     {% elif images_count == 3 %}
     <div class="row g-2 h-100">
       <div class="col-6 h-100">
-        <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+        <img src="{{ cover_image_url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
       </div>
       <div class="col-6 h-100 d-flex flex-column gap-2">
-        {% for image in images %}
+        {% for image in gallery_images %}
           {% if not image.is_cover %}
           <div style="flex: 1; overflow: hidden;">
-            <img src="{{ image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+            <img src="{{ image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
           </div>
           {% endif %}
         {% endfor %}
@@ -55,14 +55,14 @@
     {% else %}
     <div class="row g-2 h-100">
       <div class="col-6 h-100">
-        <img src="{{ boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+        <img src="{{ cover_image_url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
       </div>
       <div class="col-6 h-100">
         <div class="row g-2 h-100">
-          {% for image in images %}
+          {% for image in gallery_images %}
             {% if not image.is_cover %}
             <div class="col-6" style="height: 50%; overflow: hidden;">
-              <img src="{{ image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+              <img src="{{ image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
             </div>
             {% endif %}
           {% endfor %}
@@ -87,8 +87,8 @@
     <div class="col-lg-7">
 
       <div class="d-flex align-items-center gap-3 mb-4 pb-4 border-bottom">
-        {% if boat.owner.avatar %}
-          <img src="{{ boat.owner.avatar.url }}" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
+        {% if owner_avatar_url %}
+          <img src="{{ owner_avatar_url }}" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
         {% else %}
           <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 48px; height: 48px; font-size: 18px;">
             {{ boat.owner.username|first|upper }}
@@ -105,11 +105,11 @@
         <p class="text-muted">{{ boat.description }}</p>
       </div>
 
-      {% if boat.features %}
+      {% if features_list %}
       <div class="mb-4 pb-4 border-bottom">
         <h5 class="fw-bold mb-3">Features</h5>
         <div class="row g-2">
-          {% for feature in boat.features.split %}
+          {% for feature in features_list %}
           <div class="col-6 d-flex align-items-center gap-2">
             <i class="bi bi-check-circle text-success"></i>
             <span style="font-size: 14px;">{{ feature }}</span>
@@ -119,14 +119,14 @@
       </div>
       {% endif %}
 
-      {% if images.count > 1 %}
+      {% if gallery_count > 1 %}
       <div class="mb-4 pb-4 border-bottom" id="all-photos">
         <h5 class="fw-bold mb-3">All photos</h5>
         <div class="row g-2">
-          {% for image in images %}
+          {% for image in gallery_images %}
           <div class="col-6 col-md-4">
             <div class="rounded-3 overflow-hidden" style="aspect-ratio: 4/3;">
-              <img src="{{ image.image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
+              <img src="{{ image.url }}" class="w-100 h-100 object-fit-cover" alt="{{ boat.name }}">
             </div>
           </div>
           {% endfor %}
@@ -159,8 +159,8 @@
         {% for review in reviews %}
         <div class="mb-3 pb-3 border-bottom">
           <div class="d-flex align-items-center gap-2 mb-1">
-            {% if review.user.avatar %}
-              <img src="{{ review.user.avatar.url }}" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+            {% if review.avatar_url %}
+              <img src="{{ review.avatar_url }}" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
             {% else %}
               <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 32px; height: 32px; font-size: 13px;">
                 {{ review.user.username|first|upper }}
@@ -242,18 +242,18 @@
   <div class="mt-5 pt-4 border-top">
     <h5 class="fw-bold mb-3">Similar boats you might like</h5>
     <div class="d-flex gap-3" style="overflow-x: auto; scrollbar-width: none;">
-      {% for rec_boat in recommended %}
-      <a href="{% url 'boats:boat_detail' rec_boat.pk %}" class="text-decoration-none flex-shrink-0" style="width: 240px;">
+      {% for rec in recommended %}
+      <a href="{% url 'boats:boat_detail' rec.boat.pk %}" class="text-decoration-none flex-shrink-0" style="width: 240px;">
         <div class="rounded-4 overflow-hidden mb-2" style="aspect-ratio: 1/1;">
-          {% if rec_boat.get_cover_image %}
-            <img src="{{ rec_boat.get_cover_image }}" class="w-100 h-100 object-fit-cover" alt="{{ rec_boat.name }}">
+          {% if rec.cover_url %}
+            <img src="{{ rec.cover_url }}" class="w-100 h-100 object-fit-cover" alt="{{ rec.boat.name }}">
           {% else %}
             <div class="w-100 h-100 bg-secondary"></div>
           {% endif %}
         </div>
-        <div class="fw-bold text-dark" style="font-size: 14px;">{{ rec_boat.name }}</div>
-        <div class="text-muted" style="font-size: 13px;">{{ rec_boat.location }}</div>
-        <div class="text-dark" style="font-size: 13px;">€{{ rec_boat.price_per_day }}/day</div>
+        <div class="fw-bold text-dark" style="font-size: 14px;">{{ rec.boat.name }}</div>
+        <div class="text-muted" style="font-size: 13px;">{{ rec.boat.location }}</div>
+        <div class="text-dark" style="font-size: 13px;">€{{ rec.boat.price_per_day }}/day</div>
       </a>
       {% endfor %}
     </div>

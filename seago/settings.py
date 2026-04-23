@@ -193,11 +193,7 @@ LOGOUT_REDIRECT_URL = "/"
 AUTH_USER_MODEL = "accounts.User"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = (
-    Path(os.getenv("DISK_MEDIA_ROOT", "/var/data/media"))
-    if RENDER
-    else BASE_DIR / "media"
-)
+MEDIA_ROOT = Path(os.getenv("DISK_MEDIA_ROOT", BASE_DIR / "media"))
 SERVE_MEDIA = env_bool("SERVE_MEDIA", True)
 
 if not DEBUG:
