@@ -9,9 +9,11 @@ from django.db.models import Q
 
 def homepage(request):
     featured_boats = Boat.objects.filter(is_approved=True, is_available=True).order_by('-created_at')[:6]
+    random_boats = Boat.objects.filter(is_approved=True, is_available=True).order_by('?')[:6]
     categories = BoatCategory.objects.all()
     return render(request, 'boats/home.html', {
         'featured_boats': featured_boats,
+        'random_boats': random_boats,
         'categories': categories,
     })
 

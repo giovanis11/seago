@@ -73,6 +73,32 @@
     {% endfor %}
   </div>
 
+  {% if random_boats %}
+  <div class="scroll-row mt-3">
+    {% for boat in random_boats %}
+    <div class="boat-card-wrap">
+      <a href="{% url 'boats:boat_detail' boat.pk %}" class="text-decoration-none">
+        <div class="position-relative">
+          {% if boat.get_cover_image %}
+            <img src="{{ boat.get_cover_image }}" class="boat-img-square" alt="{{ boat.name }}">
+          {% else %}
+            <div class="boat-img-placeholder"></div>
+          {% endif %}
+          <button class="btn position-absolute top-0 end-0 p-2 border-0 bg-transparent">
+            <i class="bi bi-heart-fill text-white fs-5"></i>
+          </button>
+        </div>
+        <div class="mt-2">
+          <div class="fw-bold text-dark" style="font-size: 14px;">{{ boat.name }}</div>
+          <div class="text-muted" style="font-size: 13px;">{{ boat.location }}</div>
+          <div class="text-dark mt-1" style="font-size: 13px;">from <strong>€{{ boat.price_per_day }}</strong>/day</div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
 </div>
 
 {% endblock %}
