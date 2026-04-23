@@ -1,0 +1,60 @@
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+}
+
+.text-break-safe {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.scroll-row {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  scrollbar-width: none;
+  padding-bottom: 8px;
+}
+
+.scroll-row::-webkit-scrollbar {
+  display: none;
+}
+
+.boat-card-wrap {
+  flex-shrink: 0;
+  width: 260px;
+}
+
+@media (min-width: 992px) {
+  .boat-card-wrap {
+    width: 280px;
+  }
+}
+
+.boat-img-square {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.boat-img-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #e0e0e0;
+  border-radius: 16px;
+}
+
+input[type="radio"]:checked + label {
+  background: #bb2d3c;
+  color: #fff;
+  border-color: #bb2d3c;
+}

@@ -3,14 +3,6 @@
 {% block title %}Browse Boats - SeaGo{% endblock %}
 
 {% block content %}
-<style>
-  input[type="radio"]:checked + label {
-    background: #bb2d3c;
-    color: white;
-    border-color: #bb2d3c;
-  }
-</style>
-
 <div class="container mt-4">
 
   <div class="d-flex justify-content-between align-items-center mb-4">
@@ -49,7 +41,7 @@
         </div>
         <div>
           <div class="d-flex justify-content-between align-items-start">
-            <div class="fw-bold text-dark" style="font-size: 14px;">{{ boat.name }}</div>
+            <div class="fw-bold text-dark text-break-safe" style="font-size: 14px;">{{ boat.name }}</div>
             {% if boat.reviews.count > 0 %}
             <div class="d-flex align-items-center gap-1" style="font-size: 12px;">
               <i class="bi bi-star-fill text-warning" style="font-size: 11px;"></i>
@@ -57,9 +49,9 @@
             </div>
             {% endif %}
           </div>
-          <div class="text-muted" style="font-size: 13px;">{{ boat.location }}</div>
+          <div class="text-muted text-break-safe" style="font-size: 13px;">{{ boat.location }}</div>
           {% if boat.luxury_subcategory %}
-          <div class="text-muted" style="font-size: 13px;">{{ boat.get_luxury_subcategory_display }}</div>
+          <div class="text-muted text-break-safe" style="font-size: 13px;">{{ boat.get_luxury_subcategory_display }}</div>
           {% endif %}
           <div class="text-muted" style="font-size: 13px;">{{ boat.get_boat_type_display }} · {{ boat.capacity }} guests</div>
           <div class="text-dark mt-1" style="font-size: 13px;">from <strong>€{{ boat.price_per_day }}</strong>/day</div>

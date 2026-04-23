@@ -33,8 +33,8 @@
           <div class="w-100 h-100 bg-secondary"></div>
         {% endif %}
       </div>
-      <div class="fw-bold text-dark" style="font-size: 14px;">{{ item.boat.name }}</div>
-      <div class="text-muted" style="font-size: 13px;">{{ item.boat.location }}</div>
+      <div class="fw-bold text-dark text-break-safe" style="font-size: 14px;">{{ item.boat.name }}</div>
+      <div class="text-muted text-break-safe" style="font-size: 13px;">{{ item.boat.location }}</div>
       <div class="text-dark" style="font-size: 13px;">€{{ item.boat.price_per_day }}/day</div>
     </a>
     {% endfor %}

@@ -9,6 +9,10 @@ class BoatForm(forms.ModelForm):
         self.fields["luxury_subcategory"].help_text = (
             "Only use this if the boat belongs to the Luxury category."
         )
+        self.fields["name"].max_length = 30
+        self.fields["location"].max_length = 30
+        self.fields["name"].widget.attrs["maxlength"] = 30
+        self.fields["location"].widget.attrs["maxlength"] = 30
 
     def clean(self):
         cleaned_data = super().clean()

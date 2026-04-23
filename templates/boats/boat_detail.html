@@ -6,8 +6,8 @@
 {% block content %}
 <div class="container mt-4">
 
-  <h2 class="fw-bold mb-1">{{ boat.name }}</h2>
-  <p class="text-muted mb-3">{{ boat.location }} · {{ boat.get_boat_type_display }} · {{ boat.capacity }} guests</p>
+  <h2 class="fw-bold mb-1 text-break-safe">{{ boat.name }}</h2>
+  <p class="text-muted mb-3 text-break-safe">{{ boat.location }} · {{ boat.get_boat_type_display }} · {{ boat.capacity }} guests</p>
 
   {% with images_count=gallery_count %}
   <div class="position-relative mb-4" style="border-radius: 24px; overflow: hidden; height: 420px;">
@@ -118,7 +118,7 @@
 
       <div class="mb-4 pb-4 border-bottom">
         <h5 class="fw-bold mb-3">About this boat</h5>
-        <p class="text-muted">{{ boat.description }}</p>
+        <p class="text-muted text-break-safe">{{ boat.description }}</p>
       </div>
 
       {% if features_list %}
@@ -194,7 +194,7 @@
               {% endif %}
             {% endfor %}
           </div>
-          <p class="text-muted mb-0" style="font-size: 14px;">{{ review.comment }}</p>
+          <p class="text-muted mb-0 text-break-safe" style="font-size: 14px;">{{ review.comment }}</p>
         </div>
         {% empty %}
         <p class="text-muted">No reviews yet. Be the first to review!</p>
