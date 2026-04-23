@@ -23,6 +23,20 @@ def cloudinary_enabled():
     return bool(normalized_cloudinary_url())
 
 
+def configure_cloudinary():
+    url = normalized_cloudinary_url()
+    if not url:
+        return
+
+    import cloudinary
+
+    cloudinary.config(
+        cloudinary_url=url,
+        secure=True,
+        signature_algorithm="sha256",
+    )
+
+
 def is_cloudinary_name(name):
     return isinstance(name, str) and name.startswith(CLOUDINARY_PREFIX)
 
@@ -52,7 +66,7 @@ class HybridMediaStorage(Storage):
         if not cloudinary_enabled():
             return self.local_storage._save(name, content)
 
-        normalized_cloudinary_url()
+        configure_cloudinary()
         from cloudinary import uploader
 
         folder = os.path.dirname(name).replace("\\", "/").strip("/") or None
@@ -74,7 +88,7 @@ class HybridMediaStorage(Storage):
             return
 
         if is_cloudinary_name(name):
-            normalized_cloudinary_url()
+            configure_cloudinary()
             from cloudinary import uploader
 
             uploader.destroy(
@@ -103,7 +117,7 @@ class HybridMediaStorage(Storage):
 
     def size(self, name):
         if is_cloudinary_name(name):
-            normalized_cloudinary_url()
+            configure_cloudinary()
             from cloudinary import api
 
             resource = api.resource(decode_cloudinary_name(name), resource_type="image")
@@ -115,7 +129,7 @@ class HybridMediaStorage(Storage):
             return ""
 
         if is_cloudinary_name(name):
-            normalized_cloudinary_url()
+            configure_cloudinary()
             from cloudinary.utils import cloudinary_url
 
             url, _ = cloudinary_url(
