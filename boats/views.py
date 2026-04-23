@@ -109,16 +109,36 @@ def boat_detail(request, pk):
     )
     images = list(boat.images.all())
     reviews = list(boat.reviews.select_related("user").all())
-    recommended = list(
+    recommendation_limit = 4
+    primary_recommended = list(
         Boat.objects.select_related("owner")
         .prefetch_related("images")
         .filter(
-        is_approved=True,
-        is_available=True,
-        category=boat.category
+            is_approved=True,
+            is_available=True,
+            location=boat.location,
+            boat_type=boat.boat_type,
         )
-        .exclude(pk=pk)[:4]
+        .exclude(pk=pk)[:recommendation_limit]
     )
+
+    primary_ids = [rec_boat.pk for rec_boat in primary_recommended]
+    remaining_slots = recommendation_limit - len(primary_recommended)
+
+    fallback_recommended = []
+    if remaining_slots > 0:
+        fallback_recommended = list(
+            Boat.objects.select_related("owner")
+            .prefetch_related("images")
+            .filter(
+                is_approved=True,
+                is_available=True,
+                category=boat.category,
+            )
+            .exclude(pk__in=[pk, *primary_ids])[:remaining_slots]
+        )
+
+    recommended = primary_recommended + fallback_recommended
 
     in_wishlist = False
     if request.user.is_authenticated:
