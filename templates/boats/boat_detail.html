@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block title %}{{ boat.name }} - SeaGo{% endblock %}
+{% block meta_description %}Book {{ boat.name }} in {{ boat.location }} on SeaGo. {{ boat.get_boat_type_display }} for up to {{ boat.capacity }} guests from €{{ boat.price_per_day }} per day.{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -14,7 +15,7 @@
 
     {% if images_count == 0 %}
     <div class="w-100 h-100 bg-secondary d-flex align-items-center justify-content-center">
-      <i class="bi bi-image text-white" style="font-size: 48px;"></i>
+      <i class="bi bi-image text-white" style="font-size: 48px;" aria-hidden="true"></i>
     </div>
 
     {% elif images_count == 1 %}
@@ -74,8 +75,9 @@
     {% if images_count > 1 %}
     <button class="btn bg-white border rounded-pill position-absolute fw-bold"
             style="bottom: 16px; right: 16px; font-size: 13px;"
+            aria-controls="all-photos"
             onclick="document.querySelector('#all-photos').scrollIntoView({behavior: 'smooth'})">
-      <i class="bi bi-grid me-1"></i> Show all photos
+      <i class="bi bi-grid me-1" aria-hidden="true"></i> Show all photos
     </button>
     {% endif %}
 
@@ -104,14 +106,14 @@
         {% if request.user.is_authenticated %}
         <form method="POST" action="{% url 'boats:wishlist' boat.pk %}">
           {% csrf_token %}
-          <button type="submit" class="btn rounded-pill px-4 py-2 fw-bold {% if in_wishlist %}btn-danger text-white{% else %}btn-outline-danger{% endif %}">
-            <i class="bi {% if in_wishlist %}bi-heart-fill{% else %}bi-heart{% endif %} me-2"></i>
+          <button type="submit" class="btn rounded-pill px-4 py-2 fw-bold {% if in_wishlist %}btn-danger text-white{% else %}btn-outline-danger{% endif %}" aria-pressed="{% if in_wishlist %}true{% else %}false{% endif %}">
+            <i class="bi {% if in_wishlist %}bi-heart-fill{% else %}bi-heart{% endif %} me-2" aria-hidden="true"></i>
             {% if in_wishlist %}Saved to wishlist{% else %}Save to wishlist{% endif %}
           </button>
         </form>
         {% else %}
         <a href="{% url 'accounts:login' %}" class="btn btn-outline-danger rounded-pill px-4 py-2 fw-bold">
-          <i class="bi bi-heart me-2"></i>Log in to save
+          <i class="bi bi-heart me-2" aria-hidden="true"></i>Log in to save
         </a>
         {% endif %}
       </div>
@@ -127,7 +129,7 @@
         <div class="row g-2">
           {% for feature in features_list %}
           <div class="col-6 d-flex align-items-center gap-2">
-            <i class="bi bi-check-circle text-success"></i>
+            <i class="bi bi-check-circle text-success" aria-hidden="true"></i>
             <span style="font-size: 14px;">{{ feature }}</span>
           </div>
           {% endfor %}

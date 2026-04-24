@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}SeaGo helps you discover and book boats for coastal escapes, day trips, and memorable stays across beautiful destinations.{% endblock %}">
+    <meta name="robots" content="{% block meta_robots %}index, follow{% endblock %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
@@ -16,7 +18,7 @@
 
     <a class="navbar-brand fw-bold fs-4" href="/" style="color: #bb2d3c;">SeaGo</a>
 
-    <form class="d-none d-lg-flex" action="{% url 'boats:boat_list' %}" method="GET" style="width: 45%;">
+    <form class="d-none d-lg-flex" action="{% url 'boats:boat_list' %}" method="GET" aria-label="Search boats" style="width: 45%;">
       <div class="d-flex align-items-center rounded-pill border bg-white w-100 px-2" style="height: 64px;">
         <div class="px-3 flex-grow-1">
           <div class="fw-bold" style="font-size: 13px;">Where</div>
@@ -37,8 +39,8 @@
           <div class="fw-bold" style="font-size: 13px;">Who</div>
           <input type="number" name="capacity" min="1" class="border-0 shadow-none p-0 bg-transparent w-100" placeholder="Add guests" style="font-size: 13px; outline: none;">
         </div>
-        <button class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center me-1" style="width: 40px; height: 40px;">
-          <i class="bi bi-search text-white"></i>
+        <button class="btn btn-danger rounded-circle d-flex align-items-center justify-content-center me-1" type="submit" aria-label="Search boats" style="width: 40px; height: 40px;">
+          <i class="bi bi-search text-white" aria-hidden="true"></i>
         </button>
       </div>
     </form>
@@ -54,7 +56,7 @@
 
       {% if request.user.is_authenticated %}
         <a href="{% url 'bookings:booking_cart' %}" class="text-dark fw-bold text-decoration-none position-relative" style="font-size: 14px;">
-          <i class="bi bi-bag me-1"></i>Cart
+          <i class="bi bi-bag me-1" aria-hidden="true"></i>Cart
           {% if request.session.cart %}
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill" style="background: #bb2d3c;">1</span>
           {% endif %}
@@ -71,13 +73,13 @@
       </div>
 
       <div class="dropdown {% if not request.user.is_authenticated %}d-lg-none{% endif %}">
-        <button class="btn rounded-circle border d-flex align-items-center justify-content-center bg-white overflow-hidden p-0" data-bs-toggle="dropdown" style="width: 42px; height: 42px;">
+        <button class="btn rounded-circle border d-flex align-items-center justify-content-center bg-white overflow-hidden p-0" data-bs-toggle="dropdown" aria-label="Open account menu" style="width: 42px; height: 42px;">
           {% if request.user.is_authenticated and request.user.avatar %}
-            <img src="{{ request.user.avatar.url }}" style="width: 42px; height: 42px; object-fit: cover;">
+            <img src="{{ request.user.avatar.url }}" alt="{{ request.user.username }} avatar" style="width: 42px; height: 42px; object-fit: cover;">
           {% elif request.user.is_authenticated %}
             <span class="fw-bold" style="font-size: 16px;">{{ request.user.username|first|upper }}</span>
           {% else %}
-            <i class="bi bi-list fs-5"></i>
+            <i class="bi bi-list fs-5" aria-hidden="true"></i>
           {% endif %}
         </button>
         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="min-width: 200px; border-radius: 12px;">

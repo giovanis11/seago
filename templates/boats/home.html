@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 
+{% block title %}SeaGo - Find and Book Boats{% endblock %}
+{% block meta_description %}Find and book boats on SeaGo for day trips, coastal escapes, and unforgettable time on the water.{% endblock %}
+
 {% block content %}
 
 <!-- Mobile search - homepage only -->
 <div class="d-lg-none border-bottom bg-white px-3 py-2">
-  <button type="button" class="btn w-100 d-flex align-items-center rounded-pill border px-3 py-2 bg-white text-start" data-bs-toggle="modal" data-bs-target="#mobileSearchModal" style="height: 48px;">
-    <i class="bi bi-search text-muted me-2"></i>
+  <button type="button" class="btn w-100 d-flex align-items-center rounded-pill border px-3 py-2 bg-white text-start" data-bs-toggle="modal" data-bs-target="#mobileSearchModal" aria-label="Open boat search" style="height: 48px;">
+    <i class="bi bi-search text-muted me-2" aria-hidden="true"></i>
     <span class="text-muted" style="font-size: 14px;">Start your search</span>
   </button>
 </div>
@@ -27,9 +30,9 @@
           {% else %}
             <div class="boat-img-placeholder"></div>
           {% endif %}
-          <button class="btn position-absolute top-0 end-0 p-2 border-0 bg-transparent">
-            <i class="bi bi-heart-fill text-white fs-5"></i>
-          </button>
+          <span class="btn position-absolute top-0 end-0 p-2 border-0 bg-transparent" aria-hidden="true">
+            <i class="bi bi-heart-fill text-white fs-5" aria-hidden="true"></i>
+          </span>
         </div>
         <div class="mt-2">
           <div class="fw-bold text-dark text-break-safe" style="font-size: 14px;">{{ boat.name }}</div>
@@ -54,9 +57,9 @@
           {% else %}
             <div class="boat-img-placeholder"></div>
           {% endif %}
-          <button class="btn position-absolute top-0 end-0 p-2 border-0 bg-transparent">
-            <i class="bi bi-heart-fill text-white fs-5"></i>
-          </button>
+          <span class="btn position-absolute top-0 end-0 p-2 border-0 bg-transparent" aria-hidden="true">
+            <i class="bi bi-heart-fill text-white fs-5" aria-hidden="true"></i>
+          </span>
         </div>
         <div class="mt-2">
           <div class="fw-bold text-dark text-break-safe" style="font-size: 14px;">{{ boat.name }}</div>
@@ -71,12 +74,12 @@
 
 </div>
 
-<div class="modal fade" id="mobileSearchModal" tabindex="-1">
+<div class="modal fade" id="mobileSearchModal" tabindex="-1" aria-labelledby="mobileSearchModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-fullscreen-sm-down modal-dialog-centered">
     <div class="modal-content border-0">
       <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title fw-bold">Search boats</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title fw-bold" id="mobileSearchModalLabel">Search boats</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close search"></button>
       </div>
 
       <form method="GET" action="{% url 'boats:boat_list' %}">
