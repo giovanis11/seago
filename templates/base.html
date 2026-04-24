@@ -44,7 +44,9 @@
     </form>
 
     <div class="d-flex align-items-center gap-3">
-      {% if request.user.is_authenticated and request.user.is_owner %}
+      {% if request.user.is_authenticated and request.user.is_superuser %}
+        <a href="{% url 'accounts:admin_dashboard' %}" class="d-none d-lg-block text-dark fw-bold text-decoration-none" style="font-size: 14px;">Admin panel</a>
+      {% elif request.user.is_authenticated and request.user.is_owner %}
         <a href="{% url 'boats:my_listings' %}" class="d-none d-lg-block text-dark fw-bold text-decoration-none" style="font-size: 14px;">My listings</a>
       {% else %}
         <a href="{% url 'accounts:become_host' %}" class="d-none d-lg-block text-dark fw-bold text-decoration-none" style="font-size: 14px;">Become a host</a>
@@ -80,7 +82,11 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="min-width: 200px; border-radius: 12px;">
           {% if request.user.is_authenticated %}
-            <li><a class="dropdown-item py-2" href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
+            {% if request.user.is_superuser %}
+              <li><a class="dropdown-item py-2" href="{% url 'accounts:admin_dashboard' %}">Admin panel</a></li>
+            {% else %}
+              <li><a class="dropdown-item py-2" href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
+            {% endif %}
             <li><a class="dropdown-item py-2" href="{% url 'accounts:profile' %}">Profile</a></li>
             <li><hr class="dropdown-divider d-lg-none"></li>
             <li><a class="dropdown-item py-2 d-lg-none" href="{% url 'accounts:logout' %}">Log out</a></li>
@@ -118,7 +124,11 @@
         <h6 class="fw-bold text-dark mb-3">Account</h6>
         <div class="d-flex flex-column gap-2">
           {% if request.user.is_authenticated %}
-            <a href="{% url 'accounts:dashboard' %}" class="text-decoration-none text-muted">Dashboard</a>
+            {% if request.user.is_superuser %}
+              <a href="{% url 'accounts:admin_dashboard' %}" class="text-decoration-none text-muted">Admin panel</a>
+            {% else %}
+              <a href="{% url 'accounts:dashboard' %}" class="text-decoration-none text-muted">Dashboard</a>
+            {% endif %}
             <a href="{% url 'accounts:profile' %}" class="text-decoration-none text-muted">Profile</a>
           {% else %}
             <a href="{% url 'accounts:login' %}" class="text-decoration-none text-muted">Log in</a>

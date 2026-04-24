@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Categories - SeaGo{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="mb-4">
+    <h2 class="fw-bold mb-1">Categories</h2>
+    <p class="text-muted mb-0">Create and update category labels without leaving the project interface.</p>
+  </div>
+
+  {% include "partials/messages.html" %}
+  {% include "partials/admin_panel_nav.html" %}
+
+  <div class="admin-section-card p-4 mb-4">
+    <h5 class="fw-bold mb-3">Add new category</h5>
+    <form method="post" action="{% url 'accounts:admin_category_create' %}">
+      {% csrf_token %}
+      <div class="row g-3">
+        <div class="col-12 col-lg-4">
+          <label for="category-name" class="form-label fw-semibold">Name</label>
+          <input id="category-name" type="text" name="name" class="form-control" maxlength="100" required>
+        </div>
+        <div class="col-12 col-lg-6">
+          <label for="category-description" class="form-label fw-semibold">Description</label>
+          <input id="category-description" type="text" name="description" class="form-control" placeholder="What kind of boats belong here?">
+        </div>
+        <div class="col-12 col-lg-2 d-grid">
+          <button type="submit" class="btn btn-dark rounded-pill mt-lg-4">Create</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  {% if categories %}
+    <div class="row g-4">
+      {% for category in categories %}
+        <div class="col-12 col-lg-6">
+          <div class="admin-section-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3 gap-3">
+              <div>
+                <h5 class="fw-bold mb-1">{{ category.name }}</h5>
+                <div class="text-muted small">{{ category.boat_total }} listing{{ category.boat_total|pluralize }} linked</div>
+              </div>
+              <a href="/admin/boats/boatcategory/{{ category.pk }}/change/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark btn-sm rounded-pill">Open</a>
+            </div>
+
+            <form method="post" action="{% url 'accounts:admin_category_update' category.pk %}">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="category-name-{{ category.pk }}" class="form-label fw-semibold">Name</label>
+                <input id="category-name-{{ category.pk }}" type="text" name="name" value="{{ category.name }}" class="form-control" maxlength="100" required>
+              </div>
+              <div class="mb-3">
+                <label for="category-description-{{ category.pk }}" class="form-label fw-semibold">Description</label>
+                <textarea id="category-description-{{ category.pk }}" name="description" rows="3" class="form-control">{{ category.description }}</textarea>
+              </div>
+              <div class="admin-inline-actions">
+                <button type="submit" class="btn btn-outline-primary rounded-pill">Save category</button>
+              </div>
+            </form>
+
+            <form method="post" action="{% url 'accounts:admin_category_delete' category.pk %}" class="mt-3">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger rounded-pill">Delete category</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    {% include "partials/empty_state.html" with icon="bi-tags" title="No categories yet" spacing="py-4" %}
+  {% endif %}
+</div>
+{% endblock %}

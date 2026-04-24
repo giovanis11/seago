@@ -1,0 +1,20 @@
+<div class="admin-panel-nav mb-4">
+  <a href="{% url 'accounts:admin_dashboard' %}" class="admin-panel-nav-link{% if admin_active_tab == 'overview' %} is-active{% endif %}">
+    <i class="bi bi-grid me-2"></i>Overview
+  </a>
+  <a href="{% url 'accounts:admin_users' %}" class="admin-panel-nav-link{% if admin_active_tab == 'users' %} is-active{% endif %}">
+    <i class="bi bi-people me-2"></i>Users
+  </a>
+  <a href="{% url 'accounts:admin_listings' %}" class="admin-panel-nav-link{% if admin_active_tab == 'listings' %} is-active{% endif %}">
+    <i class="bi bi-water me-2"></i>Listings
+  </a>
+  <a href="{% url 'accounts:admin_categories' %}" class="admin-panel-nav-link{% if admin_active_tab == 'categories' %} is-active{% endif %}">
+    <i class="bi bi-tags me-2"></i>Categories
+  </a>
+  <a href="{% url 'accounts:admin_bookings' %}" class="admin-panel-nav-link{% if admin_active_tab == 'bookings' %} is-active{% endif %}">
+    <i class="bi bi-calendar2-check me-2"></i>Bookings
+  </a>
+  <a href="/admin/" class="admin-panel-nav-link" target="_blank" rel="noopener noreferrer">
+    <i class="bi bi-shield-lock me-2"></i>Django admin
+  </a>
+</div>

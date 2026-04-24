@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Bookings - SeaGo{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="mb-4">
+    <h2 class="fw-bold mb-1">Bookings</h2>
+    <p class="text-muted mb-0">Track renter activity and update booking status across the whole platform.</p>
+  </div>
+
+  {% include "partials/messages.html" %}
+  {% include "partials/admin_panel_nav.html" %}
+
+  <form method="get" class="admin-filter-form mb-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-12 col-lg-8">
+        <label for="admin-booking-search" class="form-label fw-semibold">Search bookings</label>
+        <input id="admin-booking-search" type="text" name="q" value="{{ current_q }}" class="form-control" placeholder="Boat, renter, or owner">
+      </div>
+      <div class="col-12 col-sm-6 col-lg-2">
+        <label for="admin-booking-status" class="form-label fw-semibold">Status</label>
+        <select id="admin-booking-status" name="status" class="form-select">
+          <option value="">All statuses</option>
+          {% for value, label in status_choices %}
+            <option value="{{ value }}"{% if current_status == value %} selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-2 d-grid">
+        <button type="submit" class="btn btn-dark rounded-pill">Apply</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="admin-table-wrap">
+    {% if bookings %}
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Booking</th>
+              <th>Boat</th>
+              <th>Dates</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for booking in bookings %}
+              <tr>
+                <td>
+                  <div class="fw-bold">#{{ booking.pk }}</div>
+                  <div class="text-muted small">Renter: {{ booking.renter.username }}</div>
+                  <div class="text-muted small">Owner: {{ booking.boat.owner.username }}</div>
+                </td>
+                <td>
+                  <div class="fw-semibold">{{ booking.boat.name }}</div>
+                  <div class="text-muted small">{{ booking.boat.location }}</div>
+                  <div class="text-muted small">{{ booking.guests }} guest{{ booking.guests|pluralize }}</div>
+                </td>
+                <td>{{ booking.start_date }} to {{ booking.end_date }}</td>
+                <td>€{{ booking.total_price }}</td>
+                <td>
+                  <span class="badge text-bg-light border text-dark">{{ booking.get_status_display }}</span>
+                </td>
+                <td class="text-end">
+                  <div class="admin-inline-actions justify-content-end">
+                    <form method="post" action="{% url 'accounts:admin_booking_update' booking.pk %}" class="d-flex gap-2 align-items-center flex-wrap justify-content-end">
+                      {% csrf_token %}
+                      <select name="status" class="form-select form-select-sm admin-inline-select">
+                        {% for value, label in status_choices %}
+                          <option value="{{ value }}"{% if booking.status == value %} selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                      </select>
+                      <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill">Save</button>
+                    </form>
+                    <a href="/admin/bookings/booking/{{ booking.pk }}/change/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark btn-sm rounded-pill">Open</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="p-4">
+        {% include "partials/empty_state.html" with icon="bi-calendar2-check" title="No matching bookings found" spacing="py-4" %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

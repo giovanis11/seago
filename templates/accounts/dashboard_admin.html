@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - SeaGo{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">Admin panel</h2>
+      <p class="text-muted mb-0">Manage users, owners, listings, bookings, and categories from one place.</p>
+    </div>
+    <a href="/admin/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark rounded-pill px-4">
+      Open secured Django admin
+    </a>
+  </div>
+
+  {% include "partials/messages.html" %}
+  {% include "partials/admin_panel_nav.html" %}
+
+  <div class="row g-3 mb-4">
+    {% for stat in stats %}
+      <div class="col-12 col-md-6 col-xl-4">
+        {% include "partials/admin_stat_card.html" with stat=stat %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="row g-4">
+    <div class="col-12 col-xl-6">
+      <div class="admin-section-card p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0">Recent users</h5>
+          <a href="{% url 'accounts:admin_users' %}" class="text-decoration-none">See all</a>
+        </div>
+        {% if recent_users %}
+          <div class="list-group list-group-flush">
+            {% for user in recent_users %}
+              <div class="list-group-item px-0 py-3">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                  <div>
+                    <div class="fw-bold">{{ user.username }}</div>
+                    <div class="text-muted small">{{ user.email|default:"No email added" }}</div>
+                    <div class="text-muted small">Joined {{ user.date_joined|date:"M j, Y" }}</div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2 justify-content-end">
+                    {% if user.is_superuser %}
+                      <span class="badge text-bg-dark">Admin</span>
+                    {% elif user.is_owner %}
+                      <span class="badge text-bg-primary">Owner</span>
+                    {% else %}
+                      <span class="badge text-bg-secondary">User</span>
+                    {% endif %}
+                    {% if user.is_active %}
+                      <span class="badge text-bg-success">Active</span>
+                    {% else %}
+                      <span class="badge text-bg-danger">Inactive</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          {% include "partials/empty_state.html" with icon="bi-people" title="No users yet" spacing="py-4" %}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-6">
+      <div class="admin-section-card p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0">Latest listings</h5>
+          <a href="{% url 'accounts:admin_listings' %}" class="text-decoration-none">See all</a>
+        </div>
+        {% if recent_boats %}
+          <div class="list-group list-group-flush">
+            {% for boat in recent_boats %}
+              <div class="list-group-item px-0 py-3">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                  <div>
+                    <div class="fw-bold text-break-safe">{{ boat.name }}</div>
+                    <div class="text-muted small">Owner: {{ boat.owner.username }}</div>
+                    <div class="text-muted small">{{ boat.location }}{% if boat.category %} · {{ boat.category.name }}{% endif %}</div>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2 justify-content-end">
+                    {% if boat.is_approved %}
+                      <span class="badge text-bg-success">Approved</span>
+                    {% else %}
+                      <span class="badge text-bg-warning">Pending</span>
+                    {% endif %}
+                    {% if boat.is_available %}
+                      <span class="badge text-bg-info">Available</span>
+                    {% else %}
+                      <span class="badge text-bg-secondary">Unavailable</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          {% include "partials/empty_state.html" with icon="bi-water" title="No listings yet" spacing="py-4" %}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-6">
+      <div class="admin-section-card p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0">Recent bookings</h5>
+          <a href="{% url 'accounts:admin_bookings' %}" class="text-decoration-none">See all</a>
+        </div>
+        {% if recent_bookings %}
+          <div class="list-group list-group-flush">
+            {% for booking in recent_bookings %}
+              <div class="list-group-item px-0 py-3">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                  <div>
+                    <div class="fw-bold">#{{ booking.pk }} · {{ booking.boat.name }}</div>
+                    <div class="text-muted small">Renter: {{ booking.renter.username }}</div>
+                    <div class="text-muted small">{{ booking.start_date }} to {{ booking.end_date }} · {{ booking.guests }} guests</div>
+                  </div>
+                  <span class="badge text-bg-light border text-dark">{{ booking.get_status_display }}</span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          {% include "partials/empty_state.html" with icon="bi-calendar2-check" title="No bookings yet" spacing="py-4" %}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-6">
+      <div class="admin-section-card p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0">Recent reviews</h5>
+          <a href="/admin/reviews/review/" target="_blank" rel="noopener noreferrer" class="text-decoration-none">Manage in Django admin</a>
+        </div>
+        {% if recent_reviews %}
+          <div class="list-group list-group-flush">
+            {% for review in recent_reviews %}
+              <div class="list-group-item px-0 py-3">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                  <div>
+                    <div class="fw-bold">{{ review.boat.name }}</div>
+                    <div class="text-muted small">By {{ review.user.username }}</div>
+                    <div class="text-break-safe small">{{ review.comment|truncatechars:90 }}</div>
+                  </div>
+                  <span class="badge text-bg-warning">{{ review.rating }}/5</span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          {% include "partials/empty_state.html" with icon="bi-star" title="No reviews yet" spacing="py-4" %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

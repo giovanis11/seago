@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Listings - SeaGo{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="mb-4">
+    <h2 class="fw-bold mb-1">Listings control</h2>
+    <p class="text-muted mb-0">Review boats across all owners, publish them, hide them, or remove them.</p>
+  </div>
+
+  {% include "partials/messages.html" %}
+  {% include "partials/admin_panel_nav.html" %}
+
+  <form method="get" class="admin-filter-form mb-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-12 col-lg-8">
+        <label for="admin-listing-search" class="form-label fw-semibold">Search listings</label>
+        <input id="admin-listing-search" type="text" name="q" value="{{ current_q }}" class="form-control" placeholder="Boat, owner, category, or location">
+      </div>
+      <div class="col-12 col-sm-6 col-lg-2">
+        <label for="admin-listing-status" class="form-label fw-semibold">Filter</label>
+        <select id="admin-listing-status" name="status" class="form-select">
+          <option value="">All listings</option>
+          <option value="pending"{% if current_status == "pending" %} selected{% endif %}>Pending</option>
+          <option value="live"{% if current_status == "live" %} selected{% endif %}>Live</option>
+          <option value="unavailable"{% if current_status == "unavailable" %} selected{% endif %}>Unavailable</option>
+          <option value="luxury"{% if current_status == "luxury" %} selected{% endif %}>Luxury</option>
+        </select>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-2 d-grid">
+        <button type="submit" class="btn btn-dark rounded-pill">Apply</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="admin-table-wrap">
+    {% if boats %}
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Listing</th>
+              <th>Owner</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Price</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for boat in boats %}
+              <tr>
+                <td>
+                  <div class="d-flex gap-3 align-items-center">
+                    {% if boat.get_cover_image %}
+                      <img src="{{ boat.get_cover_image }}" alt="{{ boat.name }}" class="admin-thumb">
+                    {% else %}
+                      <div class="admin-thumb admin-thumb-placeholder">
+                        <i class="bi bi-image"></i>
+                      </div>
+                    {% endif %}
+                    <div>
+                      <div class="fw-bold text-break-safe">{{ boat.name }}</div>
+                      <div class="text-muted small">{{ boat.location }}</div>
+                      <div class="text-muted small">Created {{ boat.created_at|date:"M j, Y" }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-semibold">{{ boat.owner.username }}</div>
+                  <div class="text-muted small">{{ boat.owner.email|default:"No email added" }}</div>
+                </td>
+                <td>
+                  <div>{{ boat.category.name|default:"Uncategorized" }}</div>
+                  {% if boat.luxury_subcategory %}
+                    <div class="text-muted small">{{ boat.get_luxury_subcategory_display }}</div>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="d-flex flex-column gap-2">
+                    {% if boat.is_approved %}
+                      <span class="badge text-bg-success">Approved</span>
+                    {% else %}
+                      <span class="badge text-bg-warning">Pending</span>
+                    {% endif %}
+                    {% if boat.is_available %}
+                      <span class="badge text-bg-info">Available</span>
+                    {% else %}
+                      <span class="badge text-bg-secondary">Unavailable</span>
+                    {% endif %}
+                  </div>
+                </td>
+                <td>€{{ boat.price_per_day }}/day</td>
+                <td class="text-end">
+                  <div class="admin-inline-actions justify-content-end">
+                    <form method="post" action="{% url 'accounts:admin_listing_toggle_approval' boat.pk %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-outline-success btn-sm rounded-pill">
+                        {% if boat.is_approved %}Unapprove{% else %}Approve{% endif %}
+                      </button>
+                    </form>
+                    <form method="post" action="{% url 'accounts:admin_listing_toggle_availability' boat.pk %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill">
+                        {% if boat.is_available %}Hide{% else %}Show{% endif %}
+                      </button>
+                    </form>
+                    <form method="post" action="{% url 'accounts:admin_listing_delete' boat.pk %}">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">Delete</button>
+                    </form>
+                    <a href="{% url 'boats:boat_detail' boat.pk %}" class="btn btn-outline-secondary btn-sm rounded-pill">View</a>
+                    <a href="/admin/boats/boat/{{ boat.pk }}/change/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark btn-sm rounded-pill">Open</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="p-4">
+        {% include "partials/empty_state.html" with icon="bi-water" title="No matching listings found" spacing="py-4" %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

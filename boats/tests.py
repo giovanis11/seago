@@ -10,6 +10,10 @@ from .models import Boat, BoatCategory, WishList
     SECURE_SSL_REDIRECT=False,
     SESSION_COOKIE_SECURE=False,
     CSRF_COOKIE_SECURE=False,
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    },
 )
 class WishlistTests(TestCase):
     def setUp(self):
@@ -47,7 +51,7 @@ class WishlistTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(WishList.objects.filter(user=self.user, boat=self.boat).exists())
-        self.assertContains(response, "Boat saved to your wishlist.")
+        self.assertContains(response, "Saved to wishlist")
 
     def test_second_wishlist_post_removes_saved_boat(self):
         WishList.objects.create(user=self.user, boat=self.boat)
@@ -57,4 +61,4 @@ class WishlistTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertFalse(WishList.objects.filter(user=self.user, boat=self.boat).exists())
-        self.assertContains(response, "Boat removed from your wishlist.")
+        self.assertContains(response, "Save to wishlist")

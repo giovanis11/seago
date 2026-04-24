@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Users - SeaGo{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="mb-4">
+    <h2 class="fw-bold mb-1">Users and owners</h2>
+    <p class="text-muted mb-0">Search accounts, promote hosts, and control who can access the platform.</p>
+  </div>
+
+  {% include "partials/messages.html" %}
+  {% include "partials/admin_panel_nav.html" %}
+
+  <form method="get" class="admin-filter-form mb-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-12 col-lg-8">
+        <label for="admin-user-search" class="form-label fw-semibold">Search users</label>
+        <input id="admin-user-search" type="text" name="q" value="{{ current_q }}" class="form-control" placeholder="Username, email, or phone">
+      </div>
+      <div class="col-12 col-sm-6 col-lg-2">
+        <label for="admin-user-role" class="form-label fw-semibold">Role</label>
+        <select id="admin-user-role" name="role" class="form-select">
+          <option value="">All roles</option>
+          <option value="owners"{% if current_role == "owners" %} selected{% endif %}>Owners</option>
+          <option value="members"{% if current_role == "members" %} selected{% endif %}>Users</option>
+          <option value="admins"{% if current_role == "admins" %} selected{% endif %}>Admins</option>
+          <option value="inactive"{% if current_role == "inactive" %} selected{% endif %}>Inactive</option>
+        </select>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-2 d-grid">
+        <button type="submit" class="btn btn-dark rounded-pill">Apply</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="admin-table-wrap">
+    {% if users %}
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>User</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Activity</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for account in users %}
+              <tr>
+                <td>
+                  <div class="fw-bold">{{ account.username }}</div>
+                  <div class="text-muted small">{{ account.email|default:"No email added" }}</div>
+                  <div class="text-muted small">Joined {{ account.date_joined|date:"M j, Y" }}</div>
+                </td>
+                <td>
+                  {% if account.is_superuser %}
+                    <span class="badge text-bg-dark">Admin</span>
+                  {% elif account.is_owner %}
+                    <span class="badge text-bg-primary">Owner</span>
+                  {% else %}
+                    <span class="badge text-bg-secondary">User</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if account.is_active %}
+                    <span class="badge text-bg-success">Active</span>
+                  {% else %}
+                    <span class="badge text-bg-danger">Inactive</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <div class="small">{{ account.listing_count }} listing{{ account.listing_count|pluralize }}</div>
+                  <div class="small text-muted">{{ account.booking_count }} booking{{ account.booking_count|pluralize }}</div>
+                </td>
+                <td class="text-end">
+                  <div class="admin-inline-actions justify-content-end">
+                    {% if not account.is_superuser %}
+                      <form method="post" action="{% url 'accounts:admin_user_toggle_owner' account.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill">
+                          {% if account.is_owner %}Remove owner{% else %}Make owner{% endif %}
+                        </button>
+                      </form>
+                      <form method="post" action="{% url 'accounts:admin_user_toggle_active' account.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill">
+                          {% if account.is_active %}Deactivate{% else %}Activate{% endif %}
+                        </button>
+                      </form>
+                    {% endif %}
+                    <a href="/admin/accounts/user/{{ account.pk }}/change/" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark btn-sm rounded-pill">Open</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="p-4">
+        {% include "partials/empty_state.html" with icon="bi-people" title="No matching users found" spacing="py-4" %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
