@@ -240,10 +240,6 @@
                   {% endif %}
                 {% endfor %}
               {% endif %}
-              {% if request.user.is_authenticated %}
-              {% else %}
-                <a href="...">Log in to reserve</a>
-              {% endif %}
             {% if request.user.is_authenticated %}
               <button type="submit" class="btn w-100 rounded-pill py-3 fw-bold text-white" style="background: #bb2d3c;">Add to cart</button>
             {% else %}
